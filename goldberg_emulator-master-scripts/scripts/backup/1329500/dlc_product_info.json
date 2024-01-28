@@ -1,0 +1,132 @@
+{
+    "2087130": {
+        "appid": "2087130",
+        "public_only": "1",
+        "_missing_token": true,
+        "_change_number": 22023379,
+        "_sha": "cf19903988b286ff0f57f5db866a84e858065e36",
+        "_size": 55
+    },
+    "2156362": {
+        "appid": "2156362",
+        "common": {
+            "name": "SpiderHeck - Show Your Support",
+            "type": "DLC",
+            "parent": "1329500",
+            "releasestate": "released",
+            "oslist": "windows",
+            "osarch": "64",
+            "osextended": "",
+            "controller_support": "full",
+            "small_capsule": {
+                "english": "capsule_231x87.jpg"
+            },
+            "header_image": {
+                "english": "header.jpg"
+            },
+            "library_assets": {
+                "library_capsule": "en",
+                "library_hero": "en"
+            },
+            "store_asset_mtime": "1671189178",
+            "associations": {
+                "0": {
+                    "type": "developer",
+                    "name": "Neverjam"
+                },
+                "1": {
+                    "type": "publisher",
+                    "name": "tinyBuild"
+                }
+            },
+            "primary_genre": "1",
+            "genres": {
+                "0": "1",
+                "1": "23"
+            },
+            "category": {
+                "category_1": "1",
+                "category_49": "1",
+                "category_37": "1",
+                "category_24": "1",
+                "category_44": "1",
+                "category_28": "1",
+                "category_2": "1",
+                "category_9": "1",
+                "category_39": "1",
+                "category_36": "1",
+                "category_38": "1"
+            },
+            "supported_languages": {
+                "english": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "french": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "italian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "german": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "spanish": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "japanese": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "koreana": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "brazilian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "russian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "schinese": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "polish": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "ukrainian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                }
+            },
+            "steam_release_date": "1671193706",
+            "gameid": "2156362",
+            "store_tags": {
+                "0": "492",
+                "1": "19"
+            },
+            "review_score": "7",
+            "review_percentage": "100"
+        },
+        "extended": {
+            "dlcforappid": "1329500",
+            "mustownapptopurchase": "1329500",
+            "developer": "Neverjam",
+            "publisher": "tinyBuild",
+            "homepage": "https://www.spiderheck.com/",
+            "dlcavailableonstore": "1"
+        },
+        "_missing_token": false,
+        "_change_number": 21215910,
+        "_sha": "09e056156dbad9b2700246b89a591cea56d612a1",
+        "_size": 2212
+    }
+}

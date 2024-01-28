@@ -1,0 +1,144 @@
+{
+    "1906530": {
+        "appid": "1906530",
+        "common": {
+            "name": "A Plague Tale: Requiem - Protector Pack",
+            "type": "DLC",
+            "parent": "1182900",
+            "releasestate": "released",
+            "oslist": "windows",
+            "osarch": "64",
+            "osextended": "",
+            "content_descriptors": {
+                "0": "2",
+                "1": "5"
+            },
+            "has_adult_content": "1",
+            "has_adult_content_violence": "1",
+            "controller_support": "full",
+            "small_capsule": {
+                "english": "capsule_231x87.jpg"
+            },
+            "header_image": {
+                "english": "header.jpg"
+            },
+            "store_asset_mtime": "1653915294",
+            "associations": {
+                "0": {
+                    "type": "developer",
+                    "name": "Asobo Studio"
+                },
+                "1": {
+                    "type": "publisher",
+                    "name": "Focus Entertainment"
+                }
+            },
+            "primary_genre": "25",
+            "genres": {
+                "0": "1",
+                "1": "25",
+                "2": "3"
+            },
+            "category": {
+                "category_28": "1",
+                "category_2": "1",
+                "category_22": "1",
+                "category_23": "1"
+            },
+            "supported_languages": {
+                "english": {
+                    "supported": "true",
+                    "full_audio": "true",
+                    "subtitles": "true"
+                },
+                "french": {
+                    "supported": "true",
+                    "full_audio": "true",
+                    "subtitles": "true"
+                },
+                "italian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "german": {
+                    "supported": "true",
+                    "full_audio": "true",
+                    "subtitles": "true"
+                },
+                "spanish": {
+                    "supported": "true",
+                    "full_audio": "true",
+                    "subtitles": "true"
+                },
+                "arabic": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "czech": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "koreana": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "polish": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "brazilian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "russian": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "schinese": {
+                    "supported": "true",
+                    "full_audio": "true",
+                    "subtitles": "true"
+                },
+                "latam": {
+                    "supported": "true",
+                    "subtitles": "true"
+                },
+                "tchinese": {
+                    "supported": "true",
+                    "subtitles": "true"
+                }
+            },
+            "steam_release_date": "1666043890",
+            "gameid": "1906530",
+            "store_tags": {
+                "0": "19",
+                "1": "21",
+                "2": "122",
+                "3": "4345",
+                "4": "4667"
+            },
+            "review_score": "8",
+            "review_percentage": "91"
+        },
+        "extended": {
+            "dlcforappid": "1182900",
+            "mustownapptopurchase": "1182900",
+            "developer": "Asobo Studio",
+            "publisher": "Focus Entertainment",
+            "homepage": "https://www.focus-entmt.com",
+            "dlcavailableonstore": "1"
+        },
+        "_missing_token": false,
+        "_change_number": 21943375,
+        "_sha": "90f9f37ed785d5b8ff8b458fa9b987567188cc99",
+        "_size": 2453
+    },
+    "2177740": {
+        "appid": "2177740",
+        "public_only": "1",
+        "_missing_token": true,
+        "_change_number": 22023379,
+        "_sha": "dcb487dcc62c776badebe60c868d44f689ceee0a",
+        "_size": 55
+    }
+}

@@ -1,0 +1,322 @@
+{
+    "appid": "2073850",
+    "common": {
+        "name": "THE FINALS",
+        "type": "Game",
+        "releasestate": "released",
+        "icon": "5c445c6a035d0e462068ec4d164e2224a2e7cc94",
+        "clienttga": "aed9aa4ced4f8a904065d1e4a27e57fdf6470c0a",
+        "clienticon": "de8ab492d88ea3b3e18fb0f753ecb0ad12d354c4",
+        "oslist": "windows",
+        "osarch": "",
+        "osextended": "",
+        "eulas": {
+            "0": {
+                "id": "2073850_eula_0",
+                "name": "The Finals EULA",
+                "url": "https://store.steampowered.com//eula/2073850_eula_0",
+                "version": "3"
+            }
+        },
+        "languages": {
+            "english": "1",
+            "german": "1",
+            "french": "1",
+            "koreana": "1",
+            "spanish": "1",
+            "schinese": "1",
+            "tchinese": "1",
+            "japanese": "1",
+            "brazilian": "1"
+        },
+        "steam_deck_compatibility": {
+            "category": "1",
+            "test_timestamp": "1705536000",
+            "tested_build_id": "13144285",
+            "tests": {
+                "0": {
+                    "display": "2",
+                    "token": "#SteamDeckVerified_TestResult_SteamOSDoesNotSupport"
+                }
+            },
+            "configuration": {
+                "supported_input": "gamepad",
+                "requires_manual_keyboard_invoke": "1",
+                "requires_non_controller_launcher_nav": "0",
+                "primary_player_is_controller_slot_0": "0",
+                "non_deck_display_glyphs": "0",
+                "small_text": "1",
+                "requires_internet_for_setup": "0",
+                "requires_internet_for_singleplayer": "0",
+                "recommended_runtime": "proton-experimental",
+                "requires_h264": "0",
+                "gamescope_frame_limiter_not_supported": "0",
+                "hdr_support": "0"
+            }
+        },
+        "controller_support": "partial",
+        "small_capsule": {
+            "english": "capsule_231x87.jpg"
+        },
+        "header_image": {
+            "english": "header.jpg"
+        },
+        "library_assets": {
+            "library_capsule": "en",
+            "library_hero": "en",
+            "library_logo": "en",
+            "logo_position": {
+                "pinned_position": "BottomLeft",
+                "width_pct": "61.71667541958894",
+                "height_pct": "77.7047432462234"
+            }
+        },
+        "store_asset_mtime": "1701963603",
+        "associations": {
+            "0": {
+                "type": "developer",
+                "name": "Embark Studios"
+            },
+            "1": {
+                "type": "publisher",
+                "name": "Embark Studios"
+            }
+        },
+        "primary_genre": "37",
+        "genres": {
+            "0": "1",
+            "1": "37"
+        },
+        "category": {
+            "category_1": "1",
+            "category_49": "1",
+            "category_35": "1",
+            "category_18": "1",
+            "category_36": "1",
+            "category_27": "1",
+            "category_22": "1",
+            "category_45": "1",
+            "category_46": "1"
+        },
+        "supported_languages": {
+            "english": {
+                "supported": "true",
+                "full_audio": "true",
+                "subtitles": "true"
+            },
+            "french": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "german": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "spanish": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "japanese": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "koreana": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "brazilian": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "schinese": {
+                "supported": "true",
+                "subtitles": "true"
+            },
+            "tchinese": {
+                "supported": "true",
+                "subtitles": "true"
+            }
+        },
+        "steam_release_date": "1702007340",
+        "community_visible_stats": "1",
+        "community_hub_visible": "1",
+        "gameid": "2073850",
+        "exfgls": "2",
+        "store_tags": {
+            "0": "3859",
+            "1": "1774",
+            "2": "1663",
+            "3": "113",
+            "4": "5363",
+            "5": "1775",
+            "6": "3839",
+            "7": "5711",
+            "8": "19",
+            "9": "4747",
+            "10": "1708",
+            "11": "4845",
+            "12": "4155",
+            "13": "3993",
+            "14": "4175",
+            "15": "6426",
+            "16": "4236",
+            "17": "5765",
+            "18": "1702",
+            "19": "176981"
+        },
+        "review_score": "6",
+        "review_percentage": "74"
+    },
+    "extended": {
+        "developer": "Embark Studios",
+        "publisher": "Embark Studios",
+        "homepage": "https://www.reachthefinals.com/",
+        "isfreeapp": "1"
+    },
+    "config": {
+        "installdir": "The Finals",
+        "launch": {
+            "0": {
+                "executable": "Discovery.exe",
+                "type": "default",
+                "config": {
+                    "osarch": "64"
+                }
+            }
+        }
+    },
+    "depots": {
+        "228989": {
+            "config": {
+                "oslist": "windows"
+            },
+            "depotfromapp": "228980",
+            "sharedinstall": "1"
+        },
+        "228990": {
+            "config": {
+                "oslist": "windows"
+            },
+            "depotfromapp": "228980",
+            "sharedinstall": "1"
+        },
+        "2073851": {
+            "manifests": {
+                "public": {
+                    "gid": "4765681689778139643",
+                    "size": "19360521342",
+                    "download": "8725593136"
+                }
+            },
+            "encryptedmanifests": {
+                "geforcenow": {
+                    "gid": "E60FD10E90DF2172764E1EEF4D08BBDD",
+                    "size": "4E4E4BF0614767D96604D6E7D1F4E155",
+                    "download": "203E50540E08CD5D20E6946A2BF3AB81"
+                },
+                "playtest": {
+                    "gid": "AE6B63084E22D89C89531119CF921F3B",
+                    "size": "33693212707E366A1F850937BD3A81AA",
+                    "download": "05F0CBE8647167165C011B7D740106DF"
+                }
+            }
+        },
+        "baselanguages": "english,german,french,koreana,spanish,schinese,tchinese,japanese,brazilian",
+        "branches": {
+            "public": {
+                "buildid": "13257163",
+                "timeupdated": "1706092717"
+            },
+            "geforcenow": {
+                "buildid": "12825789",
+                "pwdrequired": "1",
+                "timeupdated": "1701246871"
+            },
+            "playtest": {
+                "buildid": "13257163",
+                "pwdrequired": "1",
+                "timeupdated": "1706088121"
+            }
+        }
+    },
+    "localization": {
+        "richpresence": {
+            "english": {
+                "tokens": {
+                    "#status_mainmenu": "Main menu",
+                    "#status_editingcontestant": "Building a contestant",
+                    "#status_playingtournament": "Playing a Tournament",
+                    "#status_playingquickplay": "Playing Quick Play"
+                }
+            },
+            "french": {
+                "tokens": {
+                    "#status_mainmenu": "Menu principal",
+                    "#status_editingcontestant": "Cr\u00e9e un participant",
+                    "#status_playingtournament": "Dispute un tournoi",
+                    "#status_playingquickplay": "Joue en Partie rapide"
+                }
+            },
+            "german": {
+                "tokens": {
+                    "#status_mainmenu": "Hauptmen\u00fc",
+                    "#status_editingcontestant": "Erstellt einen Teilnehmer",
+                    "#status_playingtournament": "Spielt ein Turnier",
+                    "#status_playingquickplay": "Spielt eine schnelle Partie"
+                }
+            },
+            "japanese": {
+                "tokens": {
+                    "#status_mainmenu": "\u30e1\u30a4\u30f3\u30e1\u30cb\u30e5\u30fc",
+                    "#status_editingcontestant": "\u7af6\u6280\u8005\u3092\u4f5c\u6210\u4e2d",
+                    "#status_playingtournament": "\u30c8\u30fc\u30ca\u30e1\u30f3\u30c8\u3092\u30d7\u30ec\u30a4\u4e2d",
+                    "#status_playingquickplay": "\u30af\u30a4\u30c3\u30af\u30d7\u30ec\u30a4\u3092\u30d7\u30ec\u30a4\u4e2d"
+                }
+            },
+            "koreana": {
+                "tokens": {
+                    "#status_mainmenu": "\uba54\uc778 \uba54\ub274",
+                    "#status_editingcontestant": "\ucc38\uac00\uc790 \ub9cc\ub4dc\ub294 \uc911",
+                    "#status_playingtournament": "\ud1a0\ub108\uba3c\ud2b8 \uc9c4\ud589 \uc911",
+                    "#status_playingquickplay": "\ube60\ub978 \ub300\uc804 \ud50c\ub808\uc774 \uc911"
+                }
+            },
+            "brazilian": {
+                "tokens": {
+                    "#status_mainmenu": "Menu principal",
+                    "#status_editingcontestant": "Criando um competidor",
+                    "#status_playingtournament": "Jogando um Torneio",
+                    "#status_playingquickplay": "Jogando um Jogo R\u00e1pido"
+                }
+            },
+            "schinese": {
+                "tokens": {
+                    "#status_mainmenu": "\u4e3b\u83dc\u5355",
+                    "#status_editingcontestant": "\u6b63\u5728\u521b\u5efa\u9009\u624b",
+                    "#status_playingtournament": "\u6b63\u5728\u8fdb\u884c\u9526\u6807\u8d5b",
+                    "#status_playingquickplay": "\u6b63\u5728\u8fdb\u884c\u5feb\u901f\u6e38\u620f"
+                }
+            },
+            "spanish": {
+                "tokens": {
+                    "#status_mainmenu": "Men\u00fa principal",
+                    "#status_editingcontestant": "Creando un concursante",
+                    "#status_playingtournament": "Jugando un torneo",
+                    "#status_playingquickplay": "Jugando una partida r\u00e1pida"
+                }
+            },
+            "tchinese": {
+                "tokens": {
+                    "#status_mainmenu": "\u4e3b\u9078\u55ae",
+                    "#status_editingcontestant": "\u6b63\u5728\u5efa\u7acb\u53c3\u8cfd\u8005",
+                    "#status_playingtournament": "\u6b63\u5728\u9032\u884c\u9326\u6a19\u8cfd",
+                    "#status_playingquickplay": "\u6b63\u5728\u9032\u884c\u5feb\u901f\u904a\u6232"
+                }
+            }
+        }
+    },
+    "_missing_token": false,
+    "_change_number": 22040813,
+    "_sha": "674b1df9a2ea4b7b04cc493a3f1bfe11e5ca9ae4",
+    "_size": 7525
+}

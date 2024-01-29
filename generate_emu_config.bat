@@ -1,5 +1,4 @@
 @echo off
-setlocal enabledelayedexpansion
 
 ::setup variables
 set "appid=391540"
@@ -42,6 +41,8 @@ set "dll=steam_api.dll"
 set "dll64=steam_api64.dll"
 
 ::find dll folder
+setlocal enabledelayedexpansion
+
 for %%a in ("%CD%\..") do (
    if exist ..\%dll% ( 
 		set "dll_folder=%%~fa"
@@ -78,6 +79,8 @@ for /f "delims=" %%d in ('dir /ad /b /s ..') do (
 
 echo DLL folder: %dll_folder%
 echo.
+
+endlocal & set "dll_folder=%dll_folder%" & set "dll_file=%dll_file%"
 
 ::setup constant
 
@@ -127,7 +130,7 @@ if exist "%dll_folder%\steam_interfaces.txt" (
 )
 
 ::create emu config:
-call python %script_file% %USERNAME% %PASSWORD% %appid%
+call python %script_file% %USERNAME% %PASSWORD% %appid% > nul
 
 ::move emu config to game directory
 move "%appid%_output\steam_settings" "%dll_folder%" > nul
@@ -138,5 +141,4 @@ if exist "%appid%_output" ( rd /s /q "%appid%_output" )
 if exist "login_temp" ( rd /s /q "login_temp" )
 if exist "backup" ( rd /s /q "backup" )
 
-endlocal
 pause

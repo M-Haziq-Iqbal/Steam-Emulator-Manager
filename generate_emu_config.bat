@@ -1,7 +1,8 @@
 @echo off
+setlocal enabledelayedexpansion
 
 ::setup variables
-set "appid="
+set "appid=391540"
 set "USERNAME=KurashiAOI"
 set "PASSWORD=rnRv8Gu#QB3NJbF!ety$"
 
@@ -37,25 +38,60 @@ if not defined PASSWORD (
 	)
 )
 
-::setup constant
+set "dll=steam_api.dll"
+set "dll64=steam_api64.dll"
 
-if exist "..\steam_api.dll" (
-	set "dll_ver=steam_api.dll"
-) else if exist "..\steam_api64.dll" (
-	set "dll_ver=steam64_api.dll"
+::find dll folder
+for %%a in ("%CD%\..") do (
+   if exist ..\%dll% ( 
+		set "dll_folder=%%~fa"
+		set "dll_file=%dll%"
+	)
+   if exist ..\%dll64% ( 
+		set "dll_folder=%%~fa"
+		set "dll_file=%dll64%"
+	)
 )
 
-set "dll_file_original=..\%dll_ver%"
-set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\%dll_ver%"
-set "dll_file_backup=..\backup\%appid%_%dll_ver%"
+:: Loop through all folders and subfolders
+for /f "delims=" %%d in ('dir /ad /b /s ..') do (
+   set exclude=0
+
+   :: Loop through working directory to be excluded
+   for /f "delims=" %%e in ('dir /ad /b /s') do (
+      if "%%d" == "%%e" (
+         set exclude=1
+      )
+   )
+
+   if !exclude! equ 0 (
+      if exist "%%d\%dll%" (
+         set "dll_folder=%%d"
+			set "dll_file=%dll%"
+      )
+      if exist "%%d\%dll64%" (
+         set "dll_folder=%%d"
+			set "dll_file=%dll64%"
+      )
+   )
+)
+
+echo DLL folder: %dll_folder%
+echo.
+
+::setup constant
+
+set "dll_file_original=%dll_folder%\%dll_file%"
+set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\%dll_file%"
+set "dll_file_backup=%dll_folder%\backup\%appid%_%dll_file%"
 set "script_file=goldberg_emulator-master-scripts\scripts\generate_emu_config.py"
 set "interfaces_exe=Goldberg_Lan_Steam_Emu_master--475342f0\tools\generate_interfaces_file.exe"
 
 ::delete folders and files from any previous installation
 if exist "%appid%_output" ( rd /s /q "%appid%_output" )
 if exist "login_temp" ( rd /s /q "login_temp" )
-if exist "..\steam_settings" ( rd /s /q "..\steam_settings" )
-if exist "..\steam_interfaces.txt" ( del "..\steam_interfaces.txt" )
+if exist "%dll_folder%\steam_settings" ( rd /s /q "%dll_folder%\steam_settings" )
+if exist "%dll_folder%\steam_interfaces.txt" ( del "%dll_folder%\steam_interfaces.txt" )
 if exist "%dll_file_backup%" ( copy "%dll_file_backup%" "%dll_file_original%" > nul )
 echo Successfully deleted folders and files from any previous installation!
 
@@ -63,17 +99,17 @@ pause
 
 ::backup original steam_api.dll or steam_api64.dll
 if not exist "%dll_file_backup%" (
-	mkdir "..\backup"
+	mkdir "%dll_folder%\backup"
 	move "%dll_file_original%" "%dll_file_backup%" > nul
 	if exist "%dll_file_backup%" (
-		echo Successfully backed up original %appid% %dll_ver%!
+		echo Successfully backed up original %appid% %dll_file% to backup folder!
 	)
 )
 
 ::copy steam_api.dll or steam_api64.dll to dll folder
-copy "%dll_file_goldberg%" .. > nul
+copy "%dll_file_goldberg%" "%dll_folder%" > nul
 if exist "%dll_file_original%" (
-	echo Successfully copied Goldberg %dll_ver% to dll folder!
+	echo Successfully copied Goldberg %dll_file% to dll folder!
 )
 
 ::create steam_interfaces.txt
@@ -85,21 +121,22 @@ tasklist | find /i "%interfaces_exe%" >nul
 if %ERRORLEVEL% equ 0 ( goto :check_running )
 
 ::move steam_interfaces.txt to dll folder::
-move "steam_interfaces.txt" .. > nul
-if exist "..\steam_interfaces.txt" (
+move "steam_interfaces.txt" "%dll_folder%" > nul
+if exist "%dll_folder%\steam_interfaces.txt" (
 	echo Successfully created steam_interfaces.txt in dll folder!
 )
 
 ::create emu config:
-call python %script_file% %USERNAME% %PASSWORD% %appid% > nul
+call python %script_file% %USERNAME% %PASSWORD% %appid%
 
 ::move emu config to game directory
-move "%appid%_output\steam_settings" .. > nul
-echo Successfully created emu config in dll folder!
+move "%appid%_output\steam_settings" "%dll_folder%" > nul
+if exist "%dll_folder%\steam_settings" ( echo Successfully created emu config in dll folder! )
 
 ::delete_leftover_folders
 if exist "%appid%_output" ( rd /s /q "%appid%_output" )
 if exist "login_temp" ( rd /s /q "login_temp" )
 if exist "backup" ( rd /s /q "backup" )
 
+endlocal
 pause

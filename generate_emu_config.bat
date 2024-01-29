@@ -1,11 +1,11 @@
 @echo off
 
-::setup variables::
+::setup variables
 set "appid="
 set "USERNAME=KurashiAOI"
 set "PASSWORD=rnRv8Gu#QB3NJbF!ety$"
 
-::-----------------------------------------------------------------------------------------------::
+::-----------------------------------------------------------------------------------------------
 
 :appid_input
 if not defined appid (
@@ -41,16 +41,13 @@ if not defined PASSWORD (
 
 if exist "..\steam_api.dll" (
 	set "dll_ver=steam_api.dll"
-	set "dll_file_original=..\steam_api.dll"
-	set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\steam_api.dll"
-	set "dll_file_backup=..\backup\steam_api(%appid%).dll"
 ) else if exist "..\steam_api64.dll" (
 	set "dll_ver=steam64_api.dll"
-	set "dll_file_original=..\steam_api64.dll"
-	set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\steam_api64.dll"
-	set "dll_file_backup=..\backup\steam_api64(%appid%).dll"
 )
 
+set "dll_file_original=..\%dll_ver%"
+set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\%dll_ver%"
+set "dll_file_backup=..\backup\%appid%_%dll_ver%"
 set "script_file=goldberg_emulator-master-scripts\scripts\generate_emu_config.py"
 set "interfaces_exe=Goldberg_Lan_Steam_Emu_master--475342f0\tools\generate_interfaces_file.exe"
 

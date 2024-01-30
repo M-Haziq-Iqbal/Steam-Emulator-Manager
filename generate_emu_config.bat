@@ -1,7 +1,10 @@
 @echo off
 
+::391540 - Undertale
+::1290000 - Powerwash Simulator
+
 ::setup variables
-set "appid=391540"
+set "appid="
 set "USERNAME=Goldberg42069"
 set "PASSWORD=Evil-Slashed-Flop7"
 
@@ -54,7 +57,7 @@ for %%a in ("%CD%\..") do (
 	)
 )
 
-:: Loop through all folders and subfolders
+:: loop through all folders and subfolders
 for /f "delims=" %%d in ('dir /ad /b /s ..') do (
    set exclude=0
 
@@ -108,6 +111,20 @@ call python %script_file% %USERNAME% %PASSWORD% %appid% > nul
 move "%appid%_output\steam_settings" "%dll_folder%" > nul
 if exist "%dll_folder%\steam_settings" ( echo Successfully created emu config in dll folder! )
 
+::create steam_interfaces.txt
+start "" "%interfaces_exe%" "%dll_file_original%"
+
+:check_running
+timeout /t 1 /nobreak >nul
+tasklist | find /i "%interfaces_exe%" >nul
+if %ERRORLEVEL% equ 0 ( goto :check_running )
+
+::move steam_interfaces.txt to dll folder::
+move "steam_interfaces.txt" "%dll_folder%" > nul
+if exist "%dll_folder%\steam_interfaces.txt" (
+	echo Successfully created steam_interfaces.txt in dll folder!
+)
+
 ::backup original steam_api.dll or steam_api64.dll
 if not exist "%dll_file_backup%" (
 	mkdir "%dll_folder%\backup"
@@ -121,20 +138,6 @@ if not exist "%dll_file_backup%" (
 copy "%dll_file_goldberg%" "%dll_folder%" > nul
 if exist "%dll_file_original%" (
 	echo Successfully copied Goldberg %dll_file% to dll folder!
-)
-
-::create steam_interfaces.txt
-start "" "%interfaces_exe%" "%dll_file_backup%"
-
-:check_running
-timeout /t 1 /nobreak >nul
-tasklist | find /i "%interfaces_exe%" >nul
-if %ERRORLEVEL% equ 0 ( goto :check_running )
-
-::move steam_interfaces.txt to dll folder::
-move "steam_interfaces.txt" "%dll_folder%" > nul
-if exist "%dll_folder%\steam_interfaces.txt" (
-	echo Successfully created steam_interfaces.txt in dll folder!
 )
 
 ::delete_leftover_folders

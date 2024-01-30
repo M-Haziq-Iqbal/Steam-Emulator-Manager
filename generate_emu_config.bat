@@ -2,8 +2,8 @@
 
 ::setup variables
 set "appid=391540"
-set "USERNAME=KurashiAOI"
-set "PASSWORD=rnRv8Gu#QB3NJbF!ety$"
+set "USERNAME=Goldberg42069"
+set "PASSWORD=Evil-Slashed-Flop7"
 
 ::-----------------------------------------------------------------------------------------------
 
@@ -99,6 +99,14 @@ if exist "%dll_file_backup%" ( copy "%dll_file_backup%" "%dll_file_original%" > 
 echo Successfully deleted folders and files from any previous installation!
 
 pause
+echo.
+
+::create emu config:
+call python %script_file% %USERNAME% %PASSWORD% %appid% > nul
+
+::move emu config to game directory
+move "%appid%_output\steam_settings" "%dll_folder%" > nul
+if exist "%dll_folder%\steam_settings" ( echo Successfully created emu config in dll folder! )
 
 ::backup original steam_api.dll or steam_api64.dll
 if not exist "%dll_file_backup%" (
@@ -128,13 +136,6 @@ move "steam_interfaces.txt" "%dll_folder%" > nul
 if exist "%dll_folder%\steam_interfaces.txt" (
 	echo Successfully created steam_interfaces.txt in dll folder!
 )
-
-::create emu config:
-call python %script_file% %USERNAME% %PASSWORD% %appid% > nul
-
-::move emu config to game directory
-move "%appid%_output\steam_settings" "%dll_folder%" > nul
-if exist "%dll_folder%\steam_settings" ( echo Successfully created emu config in dll folder! )
 
 ::delete_leftover_folders
 if exist "%appid%_output" ( rd /s /q "%appid%_output" )

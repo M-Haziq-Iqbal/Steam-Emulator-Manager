@@ -3,6 +3,7 @@
 ::391540 - Undertale
 ::1290000 - Powerwash Simulator
 
+:start
 ::read data from login_appid.txt file
 if exist login_appid.txt (
 	for /F "tokens=1,* delims==" %%A in (login_appid.txt) do (
@@ -15,6 +16,7 @@ if exist login_appid.txt (
 echo AppID: %appid%
 echo Account Name: %accountName%
 echo Password: %PASSWORD%
+echo MAKE SURE THE DETAILS ABOVE ARE CORRECT!
 echo.
 
 :appid_input
@@ -78,8 +80,7 @@ for /f "delims=" %%d in ('dir /ad /b /s ..') do (
 
 	setlocal enabledelayedexpansion
    if !exclude! equ 0 (
-		echo exclude: !exclude!
-		echo d: %%d
+		endlocal
       if exist "%%d\%dll%" (
          call set "dll_folder=%%d"
 			call set "dll_file=%dll%"
@@ -92,8 +93,13 @@ for /f "delims=" %%d in ('dir /ad /b /s ..') do (
 	endlocal
 )
 
-echo DLL directory: %dll_folder%\%dll_file%
-echo.
+if exist "%dll_folder%" (
+	echo DLL directory: %dll_folder%\%dll_file%
+	echo.
+) else (
+	echo DLL directory cannot be found!
+	goto :restart
+)
 
 ::setup constant
 
@@ -154,5 +160,22 @@ if exist "%dll_file_original%" (
 if exist "%appid%_output" ( rd /s /q "%appid%_output" )
 if exist "login_temp" ( rd /s /q "login_temp" )
 if exist "backup" ( rd /s /q "backup" )
+
+echo.
+echo Goldberg emu has been successfully implemented!
+
+:restart
+set /p restart="Do you want to restart the process? (y/n): "
+echo.
+if "%restart%" == "y" (
+	goto :start
+) else if "%restart%" == "n" (
+	echo exiting...
+	timeout /t 2 /nobreak >nul
+	exit
+) else (
+	echo please enter only y/n
+	goto :restart
+)
 
 pause

@@ -6,9 +6,9 @@
 ::read data from login_appid.txt file
 if exist login_appid.txt (
 	for /F "tokens=1,* delims==" %%A in (login_appid.txt) do (
-		if %%A == appid ( set "appid=%%B" )
-		if %%A == accountName ( set "accountName=%%B" )
-		if %%A == password ( set "PASSWORD=%%B" )
+		if %%A == appid ( call set "appid=%%B" )
+		if %%A == accountName ( call set "accountName=%%B" )
+		if %%A == password ( call set "PASSWORD=%%B" )
 	)
 )
 
@@ -19,7 +19,7 @@ echo.
 
 :appid_input
 if not defined appid (
-	set /p appid="Enter the appid: "
+	call set /p appid="Enter the appid: "
 	if not defined appid (
 		echo Error: Appid is required.
 		echo.
@@ -29,7 +29,7 @@ if not defined appid (
 
 :accountName_input
 if not defined accountName (
-	set /p accountName="Enter Steam account name: "
+	call set /p accountName="Enter Steam account name: "
 	if not defined accountName (
 		echo Error: Steam account name is required.
 		echo.
@@ -39,7 +39,7 @@ if not defined accountName (
 
 :password_input
 if not defined PASSWORD (
-	set /p PASSWORD="Enter Steam password: "
+	call set /p PASSWORD="Enter Steam password: "
 	if not defined PASSWORD (
 		echo Error: Steam password is required.
 		echo.
@@ -53,12 +53,12 @@ set "dll64=steam_api64.dll"
 ::find dll folder
 for %%a in ("%CD%\..") do (
    if exist ..\%dll% ( 
-		set "dll_folder=%%~fa"
-		set "dll_file=%dll%"
+		call set "dll_folder=%%~fa"
+		call set "dll_file=%dll%"
 	)
    if exist ..\%dll64% ( 
-		set "dll_folder=%%~fa"
-		set "dll_file=%dll64%"
+		call set "dll_folder=%%~fa"
+		call set "dll_file=%dll64%"
 	)
 )
 
@@ -78,15 +78,15 @@ for /f "delims=" %%d in ('dir /ad /b /s ..') do (
 
 	setlocal enabledelayedexpansion
    if !exclude! equ 0 (
-		endlocal
+		echo exclude: !exclude!
+		echo d: %%d
       if exist "%%d\%dll%" (
-         set "dll_folder=%%d"
-			set "dll_file=%dll%"
-			
+         call set "dll_folder=%%d"
+			call set "dll_file=%dll%"
       )
       if exist "%%d\%dll64%" (
-         set "dll_folder=%%d"
-			set "dll_file=%dll64%"
+         call set "dll_folder=%%d"
+			call set "dll_file=%dll64%"
       )
    )
 	endlocal

@@ -12,9 +12,6 @@ if exist login_appid.txt (
 	)
 )
 
-setlocal enabledelayedexpansion
-endlocal & set "appid=%appid%" & set "accountName=%accountName%" & set "PASSWORD=%PASSWORD%"
-
 echo AppID: %appid%
 echo Account Name: %accountName%
 echo Password: %PASSWORD%
@@ -74,25 +71,29 @@ for /f "delims=" %%d in ('dir /ad /b /s ..') do (
       if "%%d" == "%%e" (
          set exclude=1
       )
+		if "%%d" == "%CD%" (
+			set exclude=1
+		)
    )
 
+	setlocal enabledelayedexpansion
    if !exclude! equ 0 (
+		endlocal
       if exist "%%d\%dll%" (
          set "dll_folder=%%d"
 			set "dll_file=%dll%"
+			
       )
       if exist "%%d\%dll64%" (
          set "dll_folder=%%d"
 			set "dll_file=%dll64%"
       )
    )
+	endlocal
 )
 
-echo DLL folder: %dll_folder%
+echo DLL directory: %dll_folder%\%dll_file%
 echo.
-
-setlocal enabledelayedexpansion
-endlocal & set "dll_folder=%dll_folder%" & set "dll_file=%dll_file%"
 
 ::setup constant
 

@@ -1,4 +1,4 @@
 appid=391540
 accountName=Goldberg42069
-password=Evil-Slashed-Flop7
+password=Evil-Slashed-Flop7!!!
 emailondeck_token=e148d53f975b2356b97a66927f053591

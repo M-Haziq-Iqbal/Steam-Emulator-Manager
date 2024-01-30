@@ -3,12 +3,22 @@
 ::391540 - Undertale
 ::1290000 - Powerwash Simulator
 
-::setup variables
-set "appid="
-set "USERNAME=Goldberg42069"
-set "PASSWORD=Evil-Slashed-Flop7"
+::read data from login_appid.txt file
+if exist login_appid.txt (
+	for /F "tokens=1,* delims==" %%A in (login_appid.txt) do (
+		if %%A == appid ( set "appid=%%B" )
+		if %%A == accountName ( set "accountName=%%B" )
+		if %%A == password ( set "PASSWORD=%%B" )
+	)
+)
 
-::-----------------------------------------------------------------------------------------------
+setlocal enabledelayedexpansion
+endlocal & set "appid=%appid%" & set "accountName=%accountName%" & set "PASSWORD=%PASSWORD%"
+
+echo AppID: %appid%
+echo Account Name: %accountName%
+echo Password: %PASSWORD%
+echo.
 
 :appid_input
 if not defined appid (
@@ -20,13 +30,13 @@ if not defined appid (
 	)
 )
 
-:username_input
-if not defined USERNAME (
-	set /p USERNAME="Enter Steam username: "
-	if not defined USERNAME (
-		echo Error: Steam username is required.
+:accountName_input
+if not defined accountName (
+	set /p accountName="Enter Steam account name: "
+	if not defined accountName (
+		echo Error: Steam account name is required.
 		echo.
-        	goto :username_input
+        	goto :accountName_input
 	)
 )
 
@@ -44,8 +54,6 @@ set "dll=steam_api.dll"
 set "dll64=steam_api64.dll"
 
 ::find dll folder
-setlocal enabledelayedexpansion
-
 for %%a in ("%CD%\..") do (
    if exist ..\%dll% ( 
 		set "dll_folder=%%~fa"
@@ -83,6 +91,7 @@ for /f "delims=" %%d in ('dir /ad /b /s ..') do (
 echo DLL folder: %dll_folder%
 echo.
 
+setlocal enabledelayedexpansion
 endlocal & set "dll_folder=%dll_folder%" & set "dll_file=%dll_file%"
 
 ::setup constant
@@ -105,7 +114,7 @@ pause
 echo.
 
 ::create emu config:
-call python %script_file% %USERNAME% %PASSWORD% %appid% > nul
+call python %script_file% %accountName% %PASSWORD% %appid% > nul
 
 ::move emu config to game directory
 move "%appid%_output\steam_settings" "%dll_folder%" > nul

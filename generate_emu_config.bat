@@ -13,12 +13,6 @@ if exist login_appid.txt (
 	)
 )
 
-echo AppID: %appid%
-echo Account Name: %accountName%
-echo Password: %PASSWORD%
-echo MAKE SURE THE DETAILS ABOVE ARE CORRECT!
-echo.
-
 :appid_input
 if not defined appid (
 	call set /p appid="Enter the appid: "
@@ -48,6 +42,15 @@ if not defined PASSWORD (
         	goto :password_input
 	)
 )
+
+:: Convert Steam's AppIDs to their names and vice-versa
+call node steam_api.js %appid%
+
+echo AppID: %appid%
+echo Account Name: %accountName%
+echo Password: %PASSWORD%
+echo MAKE SURE THE DETAILS ABOVE ARE CORRECT!
+echo.
 
 set "dll=steam_api.dll"
 set "dll64=steam_api64.dll"
@@ -104,10 +107,10 @@ if exist "%dll_folder%" (
 
 ::setup constant
 
-set "dll_file_original=%dll_folder%\%dll_file%"
-set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\%dll_file%"
+set "dll_file_path=%dll_folder%\%dll_file%"
 set "dll_file_backup=%dll_folder%\backup\%appid%_%dll_file%"
-set "script_file=goldberg_emulator-master-scripts\scripts\generate_emu_config.py"
+set "dll_file_goldberg=Goldberg_Lan_Steam_Emu_master--475342f0\experimental\%dll_file%"
+set "script_file=Goldberg_Lan_Steam_Emu_master--475342f0\scripts\generate_emu_config.py"
 set "interfaces_exe=Goldberg_Lan_Steam_Emu_master--475342f0\tools\generate_interfaces_file.exe"
 
 ::delete folders and files from any previous installation
@@ -118,12 +121,27 @@ if exist "%appid%_output" ( rd /s /q "%appid%_output"
 ) else if exist "%dll_folder%\steam_settings" ( rd /s /q "%dll_folder%\steam_settings" 
 ) else if exist "%dll_folder%\steam_interfaces.txt" ( del "%dll_folder%\steam_interfaces.txt" 
 ) else if exist "steam_interfaces.txt" ( del "steam_interfaces.txt" 
-) else if exist "%dll_file_backup%" ( copy "%dll_file_backup%" "%dll_file_original%" > nul 
+) else if exist "%dll_file_backup%" ( copy "%dll_file_backup%" "%dll_file_path%" > nul 
 ) else (set "prev_install=0")
 
 if %prev_install%==1 (
 	echo Successfully deleted/restored folders/files from any previous installation!
 	pause
+)
+
+::backup original steam_api.dll or steam_api64.dll
+if not exist "%dll_file_backup%" (
+	mkdir "%dll_folder%\backup"
+	move "%dll_file_path%" "%dll_file_backup%" > nul
+	if exist "%dll_file_backup%" (
+		echo Successfully backed up original %appid% %dll_file% to backup folder!
+	)
+)
+
+::copy steam_api.dll or steam_api64.dll to dll folder
+copy "%dll_file_goldberg%" "%dll_folder%" > nul
+if exist "%dll_file_path%" (
+	echo Successfully copied Goldberg %dll_file% to dll folder!
 )
 
 ::create emu config:
@@ -138,7 +156,7 @@ move "%appid%_output\steam_settings" "%dll_folder%" > nul
 if exist "%dll_folder%\steam_settings" ( echo Successfully created emu config in dll folder! )
 
 ::create steam_interfaces.txt
-if exist "%dll_file_original%" (start "" "%interfaces_exe%" "%dll_file_original%")
+if exist "%dll_file_backup%" (start "" "%interfaces_exe%" "%dll_file_backup%")
 
 :check_running
 timeout /t 1 /nobreak >nul
@@ -153,21 +171,6 @@ if exist "%dll_folder%\steam_interfaces.txt" (
 	echo Unable to create steam_interfaces.txt!
 	goto :restart
 	)
-
-::backup original steam_api.dll or steam_api64.dll
-if not exist "%dll_file_backup%" (
-	mkdir "%dll_folder%\backup"
-	move "%dll_file_original%" "%dll_file_backup%" > nul
-	if exist "%dll_file_backup%" (
-		echo Successfully backed up original %appid% %dll_file% to backup folder!
-	)
-)
-
-::copy steam_api.dll or steam_api64.dll to dll folder
-copy "%dll_file_goldberg%" "%dll_folder%" > nul
-if exist "%dll_file_original%" (
-	echo Successfully copied Goldberg %dll_file% to dll folder!
-)
 
 ::delete_leftover_folders
 if exist "%appid%_output" ( rd /s /q "%appid%_output" )

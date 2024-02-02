@@ -44,11 +44,15 @@ async def main():
     else:
         matching_apps = await search_by_game_name(search_query)
         if matching_apps:
-          print(f"Matching App IDs for '{search_query}': ")
-          for app_id, app_name in matching_apps.items():
-              app_info = await search_by_appid(app_id)
-              if app_info and app_info["type"] == "game" :
-                  print(f"{app_id}: {app_name}")
+            print(f"Matching App IDs for '{search_query}': ")
+            tasks = [search_by_appid(app_id) for app_id in matching_apps.keys()] # creates a list of coroutine objects (tasks) using a list comprehension.
+            app_infos = await asyncio.gather(*tasks) # fetch app information for multiple app IDs concurrently.
+            for app_id, app_name in matching_apps.items():
+                app_info = app_infos.pop(0)
+                if app_info and app_info["type"] == "game":
+                    print(f"{app_id}: {app_name}")
+        else:
+            print(f"Notice: No apps found with a name containing '{search_query}'.")
 
 if __name__ == "__main__":
     asyncio.run(main())

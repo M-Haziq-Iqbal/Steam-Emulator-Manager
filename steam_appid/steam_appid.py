@@ -44,11 +44,11 @@ async def main():
     else:
         matching_apps = await search_by_game_name(search_query)
         if matching_apps:
-            print(f"Matching App IDs for '{search_query}': ")
-            for app_id, app_name in matching_apps.items():
-                print(f"{app_id}: {app_name}")
-        else:
-            print(f"Notice: No apps found with a name containing '{search_query}'.")
+          print(f"Matching App IDs for '{search_query}': ")
+          for app_id, app_name in matching_apps.items():
+              app_info = await search_by_appid(app_id)
+              if app_info and app_info["type"] == "game" :
+                  print(f"{app_id}: {app_name}")
 
 if __name__ == "__main__":
     asyncio.run(main())

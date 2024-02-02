@@ -1,39 +1,20 @@
-import appid from "appid";
-import readline from 'readline';
+// Importing the required package
+const appid = require("appid");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// Get the game name from command-line arguments
+const gameId = Number(process.argv[2]); // The first argument after 'node' and the script name
 
-function appid(gameName) {
-  // Simulating asynchronous behavior with setTimeout
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (gameName === "Dota 2") {
-        resolve({ appid: 570 });
-      } else {
-        reject(new Error("Invalid game name"));
-      }
-    }, 1000); // Simulating delay
-  });
+// Define an asynchronous function to use await
+async function getGameName() {
+   try {
+      // Calling the appid function asynchronously
+      const gameName = await appid(gameId); // Returns { appid: 10, name: "Counter-Strike" }
+      process.stdout.write(gameName.name);
+      // console.log(`Game info: ${JSON.stringify(gameName)}`);
+   } catch (error) {
+      console.error('Error:', error);
+   }
 }
 
-rl.question('Enter the game name: ', async (gameName) => {
-  try {
-    const game = await appid(gameName);
-    console.log(`App ID for ${gameName}: ${game.appid}`);
-  } catch (error) {
-    console.error(error.message);
-  } finally {
-    rl.close();
-  }
-});
-
-let dota = await appid("Dota 2");
-dota.appid // 570
-
-let mystery = await appid(4000);
-mystery.name //  "Garry's Mod"
-
-await appid(/^a/i) // [{"appid":630,"name":"Alien Swarm"},{"appid":635,"name":"Alien Swarm Dedicated Server"},{"appid":640,"name":"Alien Swarm - SDK"},...]
+// Call the asynchronous function to start execution
+getGameName();

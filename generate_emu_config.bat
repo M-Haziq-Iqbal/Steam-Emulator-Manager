@@ -1,8 +1,5 @@
 @echo off
 
-::391540 - Undertale
-::1290000 - Powerwash Simulator
-
 :start
 ::read data from login_appid.txt file
 if exist login_appid.txt (
@@ -44,7 +41,7 @@ if not defined PASSWORD (
 )
 
 :: Convert Steam's AppIDs to their names and vice-versa
-call node steam_api.js %appid%
+call node "steam_appid\steam_id.js" %appid%
 
 echo AppID: %appid%
 echo Account Name: %accountName%

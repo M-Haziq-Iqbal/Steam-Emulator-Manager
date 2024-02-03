@@ -26,7 +26,7 @@ async def search_by_appid(app_id): #"https://store.steampowered.com/api/appdetai
     app_info = await get_app_info_by_id(app_id)
     if app_info and app_info.get(str(app_id), {}).get("success"):
         app_data = app_info[str(app_id)].get("data")
-        return {'name': app_data["name"], 'type': app_data["type"]}
+        return {'appid': app_data["steam_appid"], 'name': app_data["name"], 'type': app_data["type"]}
     else: return None
 
 async def search_by_game_name(name): #"https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
@@ -44,12 +44,12 @@ async def search_by_game_name(name): #"https://api.steampowered.com/ISteamApps/G
 async def main():
     steam_game = {}
     while True:
-        search_query = input("Enter the app ID or name of the app: ")
+        search_query = input(f"\nEnter the app ID or name of the app: ")
         if search_query.isdigit():  # Check if input is only a number
             app_info = await search_by_appid(int(search_query))
             if app_info and app_info.get("type") == "game":
                 steam_game = {"appid": search_query, "name": app_info["name"]}
-                print(f'Game Name: {app_info["name"]}')
+                print(f'AppID: {search_query} | Name: {app_info["name"]}')
             elif app_info and app_info.get("type") != "game":
                 print(f'Notice: {app_info["name"]} is not the base game')
             else:
@@ -68,16 +68,16 @@ async def main():
                 for app_id, app_name in matching_apps.items():
                     app_info = app_infos.pop(0)
                     if app_info and app_info["type"] == "game":
-                        print(f"AppID: {app_id}, Name: {app_name}")
+                        print(f"AppID: {app_id} | Name: {app_name}")
                 
                 # search again game data through appid
-                search_query = input("Enter the app ID of the app: ")
+                search_query = input(f"\nEnter the app ID of the app: ")
                 
                 if search_query.isdigit():  # Check if input is only a number
                     app_info = await search_by_appid(int(search_query))
                     if app_info and app_info.get("type") == "game":
                         steam_game = {"appid": search_query, "name": app_info["name"]}
-                        print(f'Game Name: {app_info["name"]}')
+                        print(f'AppID: {search_query} | Name: {app_info["name"]}')
                     elif app_info and app_info.get("type") != "game":
                         print(f'Notice: {app_info["name"]} is not the base game')
                     else:
@@ -90,7 +90,7 @@ async def main():
         if steam_game:
             break # Exit the loop
         else: 
-            print("Restarting the script...")
+            print(f"Restarting the script...")
             continue # Restart the loop
 
     

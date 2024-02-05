@@ -7,6 +7,7 @@ from Levenshtein import distance
 
 STEAM_API_URL = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
 STEAM_STORE_API_URL = "https://store.steampowered.com/api/appdetails?appids="
+STEAM_REVIEW_API_URL = "https://store.steampowered.com/appreviews/{app_id}?json=1"
 
 # Return a specific steam game data by appid query
 async def get_app_info_by_id(app_id):
@@ -72,15 +73,17 @@ async def search_by_game_name(search_query):
     for app in app_list["applist"]["apps"]:
         app_name_normalized = normalizing(app["name"])
         
-        if search_query in app_name_normalized:
+        if search_query in app_name_normalized: ####
             matching_apps[app["appid"]] = app["name"]
 
-    # for app in app_list["applist"]["apps"]:
-    #     matching_apps[app["appid"]] = app["name"]
+    if not matching_apps:
+        print(f"Notice: No exact match found, will retrieve similar match instead")
+        for app in app_list["applist"]["apps"]:
+            matching_apps[app["appid"]] = app["name"]
 
     closest_matches = match_sort(search_query, matching_apps)
 
-    return closest_matches 
+    return closest_matches
 
 # Return only game with "game" type by appid query
 async def game_appid(search_query):

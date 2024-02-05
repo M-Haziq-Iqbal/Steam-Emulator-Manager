@@ -41,7 +41,7 @@ if not defined PASSWORD (
 )
 
 :: Convert Steam's AppIDs to their names and vice-versa
-call node "steam_appid\steam_id.js" %appid%
+@REM call node "steam_appid\steam_id.js" %appid%
 
 echo AppID: %appid%
 echo Account Name: %accountName%

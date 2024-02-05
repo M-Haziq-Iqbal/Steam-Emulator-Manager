@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import re
+from Levenshtein import distance
 
 async def get_app_info_by_id(app_id):
     try:
@@ -22,6 +23,7 @@ async def get_app_list():
         print(f"An error occurred: {e}")
         return None
 
+# return {appid:appid, name:name, type:type}
 async def search_by_appid(app_id):
     #"https://store.steampowered.com/api/appdetails?appids={app_id}"
     app_info = await get_app_info_by_id(app_id)
@@ -30,16 +32,47 @@ async def search_by_appid(app_id):
         return {'appid': app_data["steam_appid"], 'name': app_data["name"], 'type': app_data["type"]}
     else: return None
 
-async def search_by_game_name(game_name):
-    #"https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
+def normalizing(input_string):
+    return re.sub(r'[^a-zA-Z0-9]', '', input_string.lower())
+
+# Sort dictionaries of game names by ascending Levenshtein distance
+def match_sort(search_query, matching_apps):
+
+    # Calculate Levenshtein distance between user input and each result
+    distances = [(apps["name"], distance(normalizing(search_query), normalizing(apps["name"]))) for apps in matching_apps]
+
+    # Sort results by ascending Levenshtein distance
+    closest_matches = sorted(distances, key=lambda x: x[1])
+    
+    # Extract up to 10 closest matches
+    closest_matches = [match[0] for match in closest_matches[:10]]
+
+    return closest_matches
+
+# Return {appid:appid, name:name}
+async def search_by_game_name(search_query): #"https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
     app_list = await get_app_list()
-    name_normalized = re.sub(r'[^a-zA-Z0-9]', '', game_name.lower())
-    matching_apps = {}
+    query_normalized = normalizing(search_query)
+
+    matching_apps = []
+    # matching_apps = {}
     for app in app_list["applist"]["apps"]:
-        app_name_normalized = re.sub(r'[^a-zA-Z0-9]', '', app["name"].lower())
-        if name_normalized in app_name_normalized:
-            matching_apps[app["appid"]] = app["name"]
-    return matching_apps
+        app_name_normalized = normalizing(app["name"])
+        
+        if query_normalized in app_name_normalized:
+            matching_apps.append({"appid": app["appid"], "name": app["name"]})
+            # matching_apps[app["appid"]] = app["name"]
+
+    closest_matches = match_sort(search_query, matching_apps)
+
+    matches = {}
+
+    for name in closest_matches:
+        for apps in matching_apps:
+            if normalizing(name) == normalizing(apps["name"]):
+                matches[apps["appid"]] = apps["name"]
+
+    return matches
 
 async def compare_appid(search_query):
     app_data = await search_by_appid(int(search_query))
@@ -54,14 +87,19 @@ async def compare_appid(search_query):
         print(f"Notice: No game found with ID {search_query}.")
 
 async def compare_game_name(search_query):
+        
     matching_apps = await search_by_game_name(search_query)
 
-    if matching_apps and len(matching_apps) > 10:
-        print(f"Matching data for '{search_query}' exceeds 10 games. Please enter more specific keywords. ")
-    elif matching_apps:
+    if matching_apps:
+
         print(f"Matching data for '{search_query}':")
-        tasks = [search_by_appid(app_id) for app_id in matching_apps.keys()] # creates a list of coroutine objects (tasks) using a list comprehension.
-        app_datas = await asyncio.gather(*tasks) # fetch app information for multiple app IDs concurrently.
+
+        # creates a list of coroutine objects (tasks) using a list comprehension.
+        # tasks = [search_by_appid(apps["appid"]) for apps in matching_apps]
+        tasks = [search_by_appid(app_id) for app_id in matching_apps.keys()]
+
+        # fetch app information for multiple app IDs concurrently.
+        app_datas = await asyncio.gather(*tasks) 
         
         base_game = False
         for app_id, app_name in matching_apps.items(): #iterates over each key-value pair in the matching_apps dictionary

@@ -9,7 +9,7 @@ import steam_dll
 absolute_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Get the parent path of the current script's directory
-parent_dir = os.path.dirname(os.path.dirname(absolute_dir))
+parent_dir = os.path.dirname(absolute_dir)
 
 # print(os.getcwd())
 
@@ -30,7 +30,7 @@ def main():
 
     appid = asyncio.run(steam_appid.main())
     login = steam_login.main()
-    dll_folder = steam_dll.main(absolute_dir, parent_dir)
+    dll = steam_dll.main(appid)
 
     ##Run generate_emu_config.py
     run_script(login, appid)

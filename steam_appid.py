@@ -73,7 +73,7 @@ async def search_by_game_name(search_query):
     for app in app_list["applist"]["apps"]:
         app_name_normalized = normalizing(app["name"])
         
-        if search_query in app_name_normalized: ####
+        if search_query in app_name_normalized: ####Control Ultimate Edition cant be found if query is only "control"
             matching_apps[app["appid"]] = app["name"]
 
     if not matching_apps:
@@ -131,14 +131,14 @@ async def game_name(search_query):
 # Main function
 async def main():
     search_query = input(f"\nEnter the app ID or name of the app: ")
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     if search_query.isdigit():  # Check if input is only a number
         return await game_appid(search_query)
     else:
         await game_name(search_query)
 
-    end_time = time.time()
+    end_time = time.perf_counter()
     elapsed_time = end_time - start_time
     print(f"\nTime taken: {'{:.4f}'.format(elapsed_time)} seconds")
 

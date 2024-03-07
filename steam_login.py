@@ -42,8 +42,6 @@ def get_login_info():
             print(f"Error: Steam password is required.\n")
             return get_login_info()  # Recursively call the function to prompt again
 
-    login_info = {accountName: password}
-
     if accountName and password:
         # Print the value
         login_info = {"accountName": accountName, "password": password}

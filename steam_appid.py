@@ -37,7 +37,11 @@ async def search_by_appid(app_id):
     if app_info and app_info.get(str(app_id), {}).get("success"):
         app_data = app_info[str(app_id)].get("data")
 
-        return {'appid': app_data["steam_appid"], 'name': app_data["name"], 'type': app_data["type"]}
+        return {
+            'appid': app_data["steam_appid"], 
+            'name': app_data["name"], 
+            'type': app_data["type"]
+        }
     
     else: return None
     

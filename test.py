@@ -33,6 +33,10 @@ def test_var(*vars):
                     print(f"\n\t\t'{value}'")
                 elif type(value) == int:
                     print(f" {value}")
+                elif type(value) == list:
+                    print()
+                    for folder in value:
+                        print(f"\t\t'{folder}'")
                 else:
                     for folder in value:
                         print(f"\n\t\t'{folder}'")

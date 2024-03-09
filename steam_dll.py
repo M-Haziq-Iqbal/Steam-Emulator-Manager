@@ -2,16 +2,69 @@ import os
 import time
 import shutil
 import logging
-import test
 import filecmp
+import test
+
 # import steam_appid
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
 
-def terminal_divider():
-    print(f"\n{'-'*150}\n")
-
+class Tool:
+    def terminal_divider():
+        print(f"\n{'-'*150}\n")
+    
+    def confirmation(message):
+        while True:
+            confirmation = input(message).lower()
+            if confirmation == 'y':
+                return True
+            elif confirmation == 'n':
+                return False
+            else:
+                print("Please enter only 'y' or 'n'\n")
+    
+    def delete_folder(*folder_path):
+        print()
+        for folder in folder_path:
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+                print(f"Folder '{folder}' and its contents deleted successfully.")
+            else:
+                print(f"Folder '{folder}' does not exist.")
+        print()
+    
+    def copy_file(def_type, file_name, folder_dict:dict):
+        if type(file_name) == list:
+            file_name = ' & '.join(file_name)
+        
+        while folder_dict:
+            print(f"\n'{file_name}' {def_type}:")
+            
+            for folder, folders in folder_dict.items():
+                status = "successful"
+                print(f"\t'{folder}': ")
+                
+                for each in folders:                    
+                    # if folder in backup:
+                    shutil.copy2(*each)
+                    
+                    # Check if existing file is the same as backup file
+                    if not filecmp.cmp(*each):
+                        status = "unsuccessful"
+                    
+                    # Get current file name
+                    path, file = os.path.split(each[0])
+                    
+                    # Print restoration status for each file
+                    print(f"\t\t- {file}: {status}!")
+                    
+            if status == "successful":
+                break
+            elif status == "unsuccessful":
+                logging.warning(f"{status.capitalize()} {def_type} detected!")
+                if not Tool.confirmation(f"Do you want to restart the '{file_name}' {def_type}? (y/n): "):
+                    break
 class File:
     
     # global attributes will be shared amongst all instances of File class
@@ -92,10 +145,20 @@ class File:
         # Sort file position based on the number of folders detected
         sorted_files = sorted(files, key=lambda x: len(x.file_folder), reverse=True)
         
+        # def prints(file, type, text):
+        #     logging.info(f"{len(type)} folders with {text} '{file.file_name}' detected!")
+        #     for file_path in {type}:
+        #         print(f"\t'{file_path}'")
+            
         for file in sorted_files:
             
             # Check if the folders have been categorized
-            if __class__.all_folders:
+            if __class__.all_folders and not __class__.common_backup_folder:
+                logging.info(f"{len(file.exclusive_folders)} folders with original '{file.file_name}' detected!")
+                
+                for file_path in file.exclusive_folders:
+                    print(f"\t'{file_path}'")
+            elif __class__.all_folders:
                 logging.info(f"{len(file.exclusive_folders)} folders with only original '{file.file_name}' detected!")
                 
                 for file_path in file.exclusive_folders:
@@ -110,7 +173,7 @@ class File:
         
     def print_backup_folder(*files):
         
-        terminal_divider()
+        Tool.terminal_divider()
         
         # Check if the files has common folders
         if __class__.common_backup_folder:
@@ -140,68 +203,61 @@ class File:
     
     def restore_backup(*files): 
         
-        terminal_divider()
+        Tool.terminal_divider()
         
-        def confirmation(message):
-            while True:
-                confirmation = input(message).lower()
-                if confirmation == 'y':
-                    return True
-                elif confirmation == 'n':
-                    return False
-                else:
-                    print("Please enter only 'y' or 'n'\n")
-                    
-        def replace_original(backup_name, backup_type, backup_file, original_file):
-            
-            if type(backup_name) == list:
-                backup_name = ' & '.join(backup_name)
-            
-            while True:
-                print(f"\nRestoring backup '{backup_name}' to:")
-                
-                for folder in backup_type:
-                    print(f"\t'{folder}'")
-                
-                # Replace existing file with backup file
-                for backup, original in zip(backup_file, original_file):
-                    shutil.copy2(backup, original)
-                    
-                    # Check if existing file is the same as backup file
-                    if filecmp.cmp(backup, original):
-                        status = "successful"
-                    elif not filecmp.cmp(backup, original):
-                        status = "unsuccessful"
-                    
-                    # Get file name
-                    path, file = os.path.split(original)
-                    
-                    logging.info(f"'{file}' restoration is {status}!")
-                
-                if status == "successful":
-                    break
-                elif status == "unsuccessful" and not confirmation("\nDo you want to restart the backup restoration? (y/n): "):
-                    break
-                        
+        if not Tool.confirmation("Do you want to restore the backup? (y/n): "):
+            logging.info(f"Backup files will not be restored...")
+            return None
         
-        if confirmation("Do you want to restore the backup? (y/n): "):
+        # Common folder
+        folder_dict = {
+            folder: [[os.path.join(folder, "_backup", file.file_name), os.path.join(folder, file.file_name)]for file in files]
+            for folder in __class__.common_backup_folder
+        }
+        
+        Tool.copy_file("backup restore", __class__.common_backup_file, folder_dict)
+
+        # Exclusive folder
+        for file in files:
+            folder_dict = {
+                folder: [[os.path.join(folder, "_backup", file.file_name), os.path.join(folder, file.file_name)]]
+                for folder in file.exclusive_backup_folders
+            }
             
-            if __class__.common_backup_folder:
-                
-                backup_file = [os.path.join(folder, "_backup", file.file_name) for folder in __class__.common_backup_folder for file in files]
-                original_file = [os.path.join(folder, file.file_name) for folder in __class__.common_backup_folder for file in files]
-                
-                replace_original(__class__.common_backup_file, __class__.common_backup_folder, backup_file, original_file)
+            Tool.copy_file("backup restore", file.file_name, folder_dict)
             
-            for file in files:
-                if file.exclusive_backup_folders:
-                    
-                    backup_file = [os.path.join(folder, "_backup", file.file_name) for folder in file.exclusive_backup_folders]
-                    original_file = [os.path.join(folder, file.file_name) for folder in file.exclusive_backup_folders]
-                    
-                    replace_original(file.file_name, file.exclusive_backup_folders, backup_file, original_file)
-        else:
-            logging.info(f"Any previous backup will not be restored")
+    def backup_file(*files):
+        
+        Tool.terminal_divider()
+        
+        if not Tool.confirmation("Do you want create backup? (y/n): "):
+            logging.info(f"Backup files will not be created...")
+            return None
+        
+        # Common folder
+        no_backup = {
+            folder: [[os.path.join(folder, file.file_name), os.path.join(folder, "_backup", file.file_name)] for file in files]
+            for folder in sorted(set(__class__.common_folders) - set(__class__.common_backup_folder))
+        } # dict = {folder: ['folder/file', 'folder/_backup/file'}
+        
+        # Create _backup folder if not exist already
+        for folder, folders in no_backup.items():
+            os.makedirs(os.path.join(folder, "_backup"), exist_ok=True)
+
+        Tool.copy_file("backup create", __class__.common_backup_file, no_backup)
+
+        # Exclusive folder
+        for file in files:
+            no_backup = {
+                folder: [[os.path.join(folder, file.file_name), os.path.join(folder, "_backup", file.file_name)]]
+                for folder in sorted(set(file.exclusive_folders) - set(file.exclusive_backup_folders))
+            } # dict = {folder: ['folder/file', 'folder/_backup/file'}
+            
+            # Create _backup folder if not exist already
+            for folder, folders in no_backup.items():
+                os.makedirs(os.path.join(folder, "_backup"), exist_ok=True)
+            
+            Tool.copy_file("backup create", file.file_name, no_backup)
         
     def main():
         
@@ -210,6 +266,12 @@ class File:
         if not instances:
             logging.error("No object passed as argument")
             return None
+        
+        Tool.delete_folder(
+            "C:\\Users\\mhazi\\Downloads\\test\\both - Copy\\_backup",
+            "C:\\Users\\mhazi\\Downloads\\test\dll - Copy\\_backup",
+            "C:\\Users\\mhazi\\Downloads\\test\\dll64 - Copy\\_backup"
+        )
         
         __class__.find_folder(*instances)
         __class__.categorize_folder(*instances)
@@ -220,8 +282,9 @@ class File:
         __class__.print_backup_folder(*instances)
         
         __class__.restore_backup(*instances)
+        __class__.backup_file(*instances)
         
-        terminal_divider()
+        Tool.terminal_divider()
         print("End of program...")
         input()
 
@@ -268,7 +331,8 @@ if __name__ == "__main__":
 
     File("steam_api.dll")
     File("steam_api64.dll")
-    
+    # File("fake.dll")
+        
     File.main()
 
 input()

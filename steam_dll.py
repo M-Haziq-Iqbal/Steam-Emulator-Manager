@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import shutil
 import logging
@@ -9,6 +10,7 @@ import test
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
+FILE_DIR = os.path.join(ABSOLUTE_DIR, "Goldberg_Lan_Steam_Emu_master--475342f0", "experimental")
 
 class Tool:
     def terminal_divider():
@@ -34,7 +36,7 @@ class Tool:
                 print(f"Folder '{folder}' does not exist.")
         print()
     
-    def copy_file(def_type, file_name, folder_dict:dict):
+    def replace_file(def_type, file_name, folder_dict:dict):
         if type(file_name) == list:
             file_name = ' & '.join(file_name)
         
@@ -205,8 +207,13 @@ class File:
         
         Tool.terminal_divider()
         
+        if not __class__.all_backup_folder:
+            return None
+        
+        logging.info("File backup detected!")
+        
         if not Tool.confirmation("Do you want to restore the backup? (y/n): "):
-            logging.info(f"Backup files will not be restored...")
+            logging.info(f"File backup will not be restored...")
             return None
         
         # Common folder
@@ -215,7 +222,7 @@ class File:
             for folder in __class__.common_backup_folder
         }
         
-        Tool.copy_file("backup restore", __class__.common_backup_file, folder_dict)
+        Tool.replace_file("backup restore", __class__.common_backup_file, folder_dict)
 
         # Exclusive folder
         for file in files:
@@ -224,41 +231,84 @@ class File:
                 for folder in file.exclusive_backup_folders
             }
             
-            Tool.copy_file("backup restore", file.file_name, folder_dict)
+            Tool.replace_file("backup restore", file.file_name, folder_dict)
             
     def backup_file(*files):
         
         Tool.terminal_divider()
         
         if not Tool.confirmation("Do you want create backup? (y/n): "):
-            logging.info(f"Backup files will not be created...")
+            logging.info(f"File backup will not be created...")
             return None
         
         # Common folder
         no_backup = {
             folder: [[os.path.join(folder, file.file_name), os.path.join(folder, "_backup", file.file_name)] for file in files]
             for folder in sorted(set(__class__.common_folders) - set(__class__.common_backup_folder))
-        } # dict = {folder: ['folder/file', 'folder/_backup/file'}
+        } # dict = {folder: ['folder/file', 'folder/_backup/file']}
         
         # Create _backup folder if not exist already
         for folder, folders in no_backup.items():
             os.makedirs(os.path.join(folder, "_backup"), exist_ok=True)
 
-        Tool.copy_file("backup create", __class__.common_backup_file, no_backup)
+        Tool.replace_file("backup create", __class__.common_backup_file, no_backup)
 
         # Exclusive folder
         for file in files:
             no_backup = {
                 folder: [[os.path.join(folder, file.file_name), os.path.join(folder, "_backup", file.file_name)]]
                 for folder in sorted(set(file.exclusive_folders) - set(file.exclusive_backup_folders))
-            } # dict = {folder: ['folder/file', 'folder/_backup/file'}
+            } # dict = {folder: ['folder/file', 'folder/_backup/file']}
             
             # Create _backup folder if not exist already
             for folder, folders in no_backup.items():
                 os.makedirs(os.path.join(folder, "_backup"), exist_ok=True)
             
-            Tool.copy_file("backup create", file.file_name, no_backup)
+            Tool.replace_file("backup create", file.file_name, no_backup)
+    
+    def apply_file(*files):
         
+        Tool.terminal_divider()
+        
+        if not Tool.confirmation("Do you want apply new files? (y/n): "):
+            logging.info(f"New files will not be applied...")
+            return None
+        
+        # Common folder
+        file_paths = {
+            folder: [[os.path.join(FILE_DIR, file.file_name), os.path.join(folder, file.file_name)] for file in files]
+            for folder in __class__.common_folders
+        }
+        
+        Tool.replace_file("application", __class__.common_files, file_paths)
+        
+        # Exclusive folder
+        for file in files:
+            file_paths = {
+                folder: [[os.path.join(FILE_DIR, file.file_name), os.path.join(folder, file.file_name)]]
+                for folder in file.exclusive_folders
+            }
+            Tool.replace_file("application", file.file_name, file_paths)
+            
+    def open_folder(*files):
+
+        Tool.terminal_divider()
+        
+        print(f"\nOpening folder(s) containing file(s)...")
+
+        # Common folder
+        print(f"{' & '.join(__class__.common_files)}: ")
+        for folder in __class__.common_folders:
+            print(f"\t{folder}")
+            os.system(f'explorer "{folder}"')
+        
+        # Exclusive folder
+        for file in files:
+            print(f"{file.file_name}: ")
+            for folder in file.exclusive_folders:
+                print(f"\t{folder}")
+                os.system(f'explorer "{folder}"')
+    
     def main():
         
         instances = __class__.file_instances
@@ -283,10 +333,12 @@ class File:
         
         __class__.restore_backup(*instances)
         __class__.backup_file(*instances)
+        __class__.apply_file(*instances)
+        # __class__.open_folder(*instances)
         
         Tool.terminal_divider()
-        print("End of program...")
-        input()
+        print(f"End of program...\nPress any key to close the program...")
+        input() ; sys.exit()
 
 class Backup(File):
     
@@ -334,224 +386,3 @@ if __name__ == "__main__":
     # File("fake.dll")
         
     File.main()
-
-input()
-
-# -----------------------------------------------------------------------------------------------------------------------------------------
-
-# Define dll files names
-dll="steam_api.dll"
-dll64="steam_api64.dll"
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
-# Get the absolute path to the current script's directory
-absolute_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Get the parent path of the current script's directory
-parent_dir = os.path.dirname(absolute_dir)
-
-# Get the path of the backup folder's directory
-dll_backup_folder = os.path.join(absolute_dir, "backup")
-
-# Get the path of the backup dll file's directory
-dll_backup = os.path.join(dll_backup_folder, dll)
-dll64_backup = os.path.join(dll_backup_folder, dll64)
-
-def find_dll_folder() -> dict:
-    
-    dll_dir = []
-    dll64_dir = []
-    
-    # Iterate through the directory tree rooted at parent_dir
-    for root, dirs, files in os.walk(parent_dir):
-        
-        # Exclude current script's directory
-        if "_GoldbergEmu" not in root:
-        
-            if dll64 in files:
-                dll64_dir.append(root)
-        
-            if dll in files:
-                dll_dir.append(root)
-    
-    # Get common elements from dll_dir and dll64_dir
-    dll_both = [item for item in dll_dir if item in dll64_dir]
-
-    # Remove common elements from dll_dir and dll64_dir
-    dll_only = [item for item in dll_dir if item not in dll_both]
-    dll64_only = [item for item in dll64_dir if item not in dll_both]
-    
-    # Combine all dll locations into single list and remove duplicates
-    dll_all = set(dll_dir) | set(dll64_dir)
-    
-    if len(dll_all) > 1:
-        logging.info(f"Multiple folders with original dll files detected!")
-    elif len(dll_all) == 1:
-        logging.info(f"Original dll files detected!")
-    else:
-        logging.info(f"No original dll files detected!")
-        return None
-    
-    if dll_both:
-        print(f"'{dll}' and '{dll64}':")
-        for dll_path in dll_both:
-            print(f"\t'{dll_path}'")
-
-    if dll_only:
-        print(f"'{dll}':")
-        for dll_path in dll_only:
-            print(f"\t'{dll_path}'")
-
-    if dll64_only:
-        print(f"'{dll64}':")
-        for dll64_path in dll64_only:
-            print(f"\t'{dll64_path}'")
-
-    return {"dll_dir": dll_dir, "dll64_dir": dll64_dir, "dll_all": dll_all, "dll_both": dll_both, "dll_only": dll_only, "dll64_only": dll64_only}
-    
-def restore_dll_backup(dll_folders):
-    
-    if not os.path.exists(dll_backup_folder):
-        return None
-    
-    logging.info(f"Backup dll files detected!")
-    
-    if os.path.exists(dll_backup) and os.path.exists(dll64_backup):
-        print(f"'{dll}' and '{dll64}': '{dll_backup_folder}'")
-    else:
-        if os.path.exists(dll_backup):
-            print(f"'{dll}': '{dll_backup_folder}' ")
-        if os.path.exists(dll64_backup):
-            print(f"'{dll64}': '{dll_backup_folder}' ")
-        
-    while True:
-        confirmation = input(f"Do you want to restore the backup? (y/n): ")
-        
-        if confirmation.lower() == "y":
-            error = False
-            if os.path.exists(dll_backup) and os.path.exists(dll64_backup):
-                for folder in dll_folders["dll_both"]:
-                    shutil.copy2(dll_backup, folder)
-                    if os.path.exists(os.path.join(folder, dll)) and os.path.exists(os.path.join(folder, dll)):
-                        print(f"'{dll}' and '{dll64}' > '{folder}'")
-                    elif os.path.exists(os.path.join(folder, dll64)) and not os.path.exists(os.path.join(folder, dll)):
-                        logging.error(f"'{dll}' backup restoration to '{folder}' failed!")
-                        error = True
-                    elif os.path.exists(os.path.join(folder, dll)) and not os.path.exists(os.path.join(folder, dll64)):
-                        logging.error(f"'{dll64}' backup restoration to '{folder}' failed!")
-                        error = True
-                    else:
-                        logging.error(f"'{dll}' and '{dll64}' backup restoration to '{folder}' failed!")
-                        error = True              
-            else:
-                if os.path.exists(dll_backup):
-                    for folder in dll_folders["dll_only"]:
-                        shutil.copy2(dll_backup, folder)
-                        if os.path.exists(os.path.join(folder, dll)):
-                            print(f"'{dll}' > '{folder}'")
-                        else:
-                            logging.error(f"'{dll}' backup restoration to '{folder}' failed!")
-                            error = True
-                if os.path.exists(dll64_backup):
-                    for folder in dll_folders["dll64_only"]:
-                        shutil.copy2(dll64_backup, folder)
-                        if os.path.exists(os.path.join(folder, dll)):
-                            print(f"'{dll64}' > '{folder}'")
-                        else:
-                            logging.error(f"'{dll64}' backup restoration to '{folder}' failed!")
-                            error = True
-            
-            if error is False:
-                print()
-                logging.info(f"Backup dll files successfully restored!")
-            
-            print(f"\nPress any key to continue...")
-            input()
-            break
-        elif confirmation.lower() == "n":
-            print(f"\nAny previous backup will not be restored\nPress any key to continue...")
-            input()
-            break
-        else:
-            print("Please enter only 'y' or 'n'")
-
-def open_dll_folder(dll_folders):
-
-    print(f"\nOpening folder(s) containing dll file(s)...")
-    time.sleep(1)
-    
-    print("All dll files location:")
-    for folder in dll_folders["dll_all"]:
-        print(folder)
-        os.system(f'explorer "{folder}"')
-        
-    print()
-        
-def backup_dll_original(dll_folders):
-    dll_original_folders = [os.path.join(folder, dll) for folder in dll_folders["dll_dir"]]
-    dll64_original_folders = [os.path.join(folder, dll64) for folder in dll_folders["dll64_dir"]]
-    
-    test.test_var(dll_original_folders, dll64_original_folders)
-    
-    if not os.path.exists(dll_backup_folder):
-        os.mkdir(dll_backup_folder)
-        
-    if dll_original_folders:
-        logging.warning(f"There is already a backup of {dll} available in {dll_backup_folder}")
-    
-    while True:
-        confirmation = input(f"\nDo you still want to create backup dll files? (y/n): ")
-        if confirmation.lower() == "y":
-            if dll_folders["dll_both"]:
-                for dll_path in dll_folders["dll_both"]:
-                    shutil.copy2(dll_file, dll_path)
-                    shutil.copy2(dll_file, dll_path)
-                    logging.info(f"\n'{dll}' and '{dll64}' has been successfully backed up to '{dll_backup_folder}'")
-                for dll_file in dll_original_folders:
-                    shutil.copy2(dll_file, dll_backup_folder)
-                    logging.info(f"'{dll}' has been successfully backed up to '{dll_backup_folder}'")
-                for dll_file in dll64_original_folders:
-                    shutil.copy2(dll_file, dll_backup_folder)
-                    logging.info(f"'{dll64}' has been successfully backed up to '{dll_backup_folder}'")
-            print(f"Press any key to continue...")
-            input()
-        elif confirmation.lower() == "n":
-            logging.info(f"\nBackup dll files will not be created")
-            print(f"\nPress any key to continue...")
-            input()
-            break
-        else:
-            print("Please enter only 'y' or 'n'")
-        
-    print()
-        
-def apply_dll_emu(dll_folders):
-    dll_emu = os.path.join(absolute_dir, "Goldberg_Lan_Steam_Emu_master--475342f0", "experimental", dll)
-    dll64_emu = os.path.join(absolute_dir, "Goldberg_Lan_Steam_Emu_master--475342f0", "experimental", dll64)
-    
-    for folder in dll_folders[0]:
-        shutil.copy2(dll_emu, folder)
-        print(f"'{dll}' has been suscessfully applied to '{folder}'")
-    
-    for folder in dll_folders[1]:
-        shutil.copy2(dll64_emu, folder)
-        print(f"'{dll64}' has been suscessfully applied to '{folder}'")
-
-    print()
-    
-def main():
-
-    # dll_folders = find_dll_folder()
-
-    # if dll_folders:
-        # restore_dll_backup(dll_folders)
-        # open_dll_folder(dll_folders)
-        # backup_dll_original(dll_folders)
-        # apply_dll_emu(dll_folders)
-        
-    input("Press any key to continue...")
-
-if __name__ == "__main__":
-    main()

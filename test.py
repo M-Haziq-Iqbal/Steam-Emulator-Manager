@@ -1,6 +1,6 @@
 import logging
 
-def test_var(*vars):
+def test(*vars):
     
     print(f"\n{'-'*150}\n")
     

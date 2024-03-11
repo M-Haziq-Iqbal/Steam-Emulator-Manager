@@ -4,9 +4,7 @@ import time
 import shutil
 import logging
 import filecmp
-import test
-
-# import steam_appid
+from test import test
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
@@ -335,10 +333,6 @@ class File:
         __class__.backup_file(*instances)
         __class__.apply_file(*instances)
         # __class__.open_folder(*instances)
-        
-        Tool.terminal_divider()
-        print(f"End of program...\nPress any key to close the program...")
-        input() ; sys.exit()
 
 class Backup(File):
     
@@ -375,14 +369,19 @@ class Backup(File):
         __class__.categorize_folder(*__class__.file_instances)
         __class__.print_folder(*__class__.file_instances)
         __class__.restore_backup(*__class__.file_instances)
-    
-if __name__ == "__main__":
-    
-    logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
-    # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-    File("steam_api.dll")
-    File("steam_api64.dll")
-    # File("fake.dll")
+def main():        
+        logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
         
-    File.main()
+        # Create object instance of class
+        File("steam_api.dll")
+        File("steam_api64.dll")
+            
+        File.main()
+        
+        Tool.terminal_divider()
+        print(f"End of program...\nPress any key to close the program...")
+        input() ; sys.exit()
+        
+if __name__ == "__main__":
+    main()

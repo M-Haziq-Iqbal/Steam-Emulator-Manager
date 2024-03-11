@@ -1,62 +1,103 @@
 import configparser
+import logging
+from test import test
 
-def read_login_info():
-    # Create a ConfigParser object
-    config = configparser.ConfigParser()
+LOGIN_INI = "login_info.ini"
 
-    # Read the INI file
-    login_ini = config.read('login_info.ini')
+logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
 
-    # Access sections and keys in the INI file
-    if login_ini:
-        accountName = config.get('Credentials', 'accountName')
-        password = config.get('Credentials', 'password')
-    else:
-        print(f"Notice: 'login_info.ini' doesn't exist")
-
-    if accountName and password:
-        return {"accountName": accountName, "password": password}
-
-# Prompt Steam login info if not found in the INI file
-def get_login_info():
-
-    login_info = {}
-    login_info = read_login_info()
-
-    accountName = login_info.get("accountName")
-    password = login_info.get("password")      
-
-    if not accountName:
-        accountName = input("Enter Steam account name: ")
+class Account:
+    
+    def __init__(self):
+        self.accountName = ""
+        self.password = ""
         
-        # If accountName is still not defined, display an error and prompt again
-        if not accountName:
-            print(f"Error: Steam account name is required.\n")
-            return get_login_info()  # Recursively call the function to prompt again
+    def write_login_info(self):
+        # Create a ConfigParser object
+        config = configparser.ConfigParser()
 
-    if not password:
-        password = input("Enter Steam account name:")
+        # Add sections and key-value pairs
+        config['CREDENTIALS'] = {'accountName': self.accountName, 'password': self.password}
+
+        # Write the configuration to a file
+        with open(LOGIN_INI, 'w') as configfile:
+            config.write(configfile)
+
+        print()
+        logging.info(f"Steam info has been saved to {LOGIN_INI}")
         
-        # If accountName is still not defined, display an error and prompt again
-        if not login_info["password"]:
-            print(f"Error: Steam password is required.\n")
-            return get_login_info()  # Recursively call the function to prompt again
+    def get_login_info(self):
+        
+        def get_data(attribute, details):
+            
+            while not attribute:
+                attribute = input(f"Enter Steam {details}: ")
+                
+                if not attribute:
+                    logging.warning(f"Steam {details} is required.\n")
+                if attribute:
+                    break
+            return attribute
+        
+        self.accountName = get_data(self.accountName, "account name")
+        self.password = get_data(self.password, "password")
+        
+        print(f'\nAccount Name: {self.accountName}')
+        print(f'Password: {self.password}')
+        
+        if not confirmation("Are the details above correct? (y/n)\t"):
+            print()
+            self.accountName, self.password = "", ""
+            self.get_login_info()
+        else:
+            self.write_login_info()
+            
 
-    if accountName and password:
-        # Print the value
-        login_info = {"accountName": accountName, "password": password}
-        return login_info
-    else:
-        get_login_info()
+    def read_login_info(self):
+        # Create a ConfigParser object
+        config = configparser.ConfigParser()
 
+        # Read the INI file
+        login_ini = config.read(LOGIN_INI)
+        
+        # Access sections and keys in the INI file
+        if login_ini:
+            try:
+                self.accountName = config.get('CREDENTIALS', 'accountName')
+                self.password = config.get('CREDENTIALS', 'password')
+            except configparser.NoSectionError as e:
+                logging.error(f"{e} in '{LOGIN_INI}'\n")
+                self.get_login_info()
+            except configparser.NoOptionError as e:
+                logging.error(f"{e} in '{LOGIN_INI}'\n")
+                self.get_login_info()
+        else:
+            print(f"Notice: {LOGIN_INI} doesn't exist")
+        
+        print()
+        if not self.accountName:
+            logging.error(f"Steam account name cannot be found in '{LOGIN_INI}'")
+        if not self.password:
+            logging.error(f"Steam password cannot be found in '{LOGIN_INI}'")
+        
+def confirmation(message):
+    
+    while True:
+        confirmation = input(message).lower()
+        
+        if confirmation == "y":
+            return True
+        elif confirmation == "n":
+            return False
+        else:
+            print("Please enter only 'y' or 'n'\n")
+    
 def main():
-    login = get_login_info()
-
-    print(f'Account Name: {login["accountName"]}')
-    print(f'Password: {login["password"]}')
-    print(f"MAKE SURE THE DETAILS ABOVE ARE CORRECT!\n")
-
-    return login
-
+    steam = Account()
+    steam.read_login_info()
+    steam.get_login_info()
+    
+    return steam
+        
 if __name__ == "__main__":
     main()

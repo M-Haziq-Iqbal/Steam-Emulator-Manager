@@ -4,6 +4,8 @@ import time
 import shutil
 import logging
 import filecmp
+
+from tool import confirmation
 from test import test
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -13,16 +15,6 @@ FILE_DIR = os.path.join(ABSOLUTE_DIR, "Goldberg_Lan_Steam_Emu_master--475342f0",
 class Tool:
     def terminal_divider():
         print(f"\n{'-'*150}\n")
-    
-    def confirmation(message):
-        while True:
-            confirmation = input(message).lower()
-            if confirmation == 'y':
-                return True
-            elif confirmation == 'n':
-                return False
-            else:
-                print("Please enter only 'y' or 'n'\n")
     
     def delete_folder(*folder_path):
         print()
@@ -63,7 +55,7 @@ class Tool:
                 break
             elif status == "unsuccessful":
                 logging.warning(f"{status.capitalize()} {def_type} detected!")
-                if not Tool.confirmation(f"Do you want to restart the '{file_name}' {def_type}? (y/n): "):
+                if not confirmation(f"Do you want to restart the '{file_name}' {def_type}? (y/n): "):
                     break
 class File:
     
@@ -210,7 +202,7 @@ class File:
         
         logging.info("File backup detected!")
         
-        if not Tool.confirmation("Do you want to restore the backup? (y/n): "):
+        if not confirmation("Do you want to restore the backup? (y/n): "):
             logging.info(f"File backup will not be restored...")
             return None
         
@@ -235,7 +227,7 @@ class File:
         
         Tool.terminal_divider()
         
-        if not Tool.confirmation("Do you want create backup? (y/n): "):
+        if not confirmation("Do you want create backup? (y/n): "):
             logging.info(f"File backup will not be created...")
             return None
         
@@ -268,7 +260,7 @@ class File:
         
         Tool.terminal_divider()
         
-        if not Tool.confirmation("Do you want apply new files? (y/n): "):
+        if not confirmation("Do you want apply new files? (y/n): "):
             logging.info(f"New files will not be applied...")
             return None
         
@@ -380,8 +372,7 @@ def main():
         File.main()
         
         Tool.terminal_divider()
-        print(f"End of program...\nPress any key to close the program...")
-        input() ; sys.exit()
+        print(f"End of program...")
         
 if __name__ == "__main__":
     main()

@@ -2,6 +2,10 @@ import aiohttp
 import asyncio
 import re
 import time
+import logging
+
+from tool import confirmation,  timer
+from test import test
 
 from Levenshtein import distance
 
@@ -9,8 +13,10 @@ STEAM_API_URL = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
 STEAM_STORE_API_URL = "https://store.steampowered.com/api/appdetails?appids="
 STEAM_REVIEW_API_URL = "https://store.steampowered.com/appreviews/{app_id}?json=1"
 
+logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
+
 # Return a specific steam game data by appid query
-async def get_app_info_by_id(app_id):
+async def get_app_info_by_id(app_id: int):
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{STEAM_STORE_API_URL}{app_id}") as response:
@@ -32,7 +38,7 @@ async def get_app_list():
         return None
 
 # Return filtered steam game data by appid query
-async def search_by_appid(app_id):
+async def search_by_appid(app_id: int):
     app_info = await get_app_info_by_id(app_id)
     if app_info and app_info.get(str(app_id), {}).get("success"):
         app_data = app_info[str(app_id)].get("data")
@@ -46,11 +52,11 @@ async def search_by_appid(app_id):
     else: return None
     
 # Remove special characters, whitespace
-def normalizing(input_string):
+def normalizing(input_string: str):
     return re.sub(r'[^a-zA-Z0-9]', '', input_string.lower())
 
 # Return sorted game list by ascending Levenshtein distance
-def match_sort(search_query, matching_apps):
+def match_sort(search_query: str, matching_apps:dict):
 
     # Calculate Levenshtein distance between user input and each result
     distances = [(name, distance(search_query, normalizing(name))) for name in matching_apps.values()]
@@ -58,7 +64,7 @@ def match_sort(search_query, matching_apps):
     # Sort results by ascending Levenshtein distance
     closest_matches = sorted(distances, key=lambda x: x[1])
     
-    # Extract up to 10 closest matches
+    # Extract up to 10 names of closest matches
     closest_matches = [match[0] for match in closest_matches[:10]]
 
     matches = {}
@@ -69,7 +75,7 @@ def match_sort(search_query, matching_apps):
     return matches
 
 # Return games list that match string search query 
-async def search_by_game_name(search_query):
+async def search_by_game_name(search_query: str):
     app_list = await get_app_list()
     search_query = normalizing(search_query)
 
@@ -90,66 +96,67 @@ async def search_by_game_name(search_query):
     return closest_matches
 
 # Return only game with "game" type by appid query
-async def game_appid(search_query):
+async def game_appid(search_query: int):
     app_data = await search_by_appid(int(search_query))
 
     if app_data and app_data.get("type") == "game":
-        print(f'AppID: {search_query} | Name: {app_data["name"]}')
-        return {"appid": app_data["appid"], "name": app_data["name"]}
+        print(f"\n{'AppID' : <10}{'Name' : <10}")
+        print(f"{search_query : <10}{app_data['name']: <10}")
+        
+        return app_data
     elif app_data and app_data.get("type") != "game":
-        print(f'AppID: {search_query} | Name: {app_data["name"]}')
-        print(f'Notice: This is not a game')
+        print(f"\n{'AppID' : <10}{'Name' : <10}")
+        print(f"{search_query : <10}{app_data['name']: <10}")
+        logging.warning(f"{app_data['name']} is not a base game")
+        
+        return None
     else:
-        print(f"Notice: No game found with ID {search_query}.")
+        logging.warning(f"No game found with ID {search_query}.")
+        
+        return None
 
 # Return only games with "game" type by name query
-async def game_name(search_query):
+async def game_name(search_query: str):
         
     matching_apps = await search_by_game_name(search_query)
+    
+    print(f"\nMatching data for '{search_query}':")
+    
+    # creates a list of coroutine objects (tasks) using a list comprehension.
+    tasks = [search_by_appid(app_id) for app_id in matching_apps.keys()]
 
-    if matching_apps:
-
-        print(f"\nMatching data for '{search_query}':")
-
-        # creates a list of coroutine objects (tasks) using a list comprehension.
-        tasks = [search_by_appid(app_id) for app_id in matching_apps.keys()]
-
-        # fetch app information for multiple app IDs concurrently.
-        app_datas = await asyncio.gather(*tasks) 
-        
-        base_game = False
-        for app_id, app_name in matching_apps.items(): #iterates over each key-value pair in the matching_apps dictionary
-            app_data = app_datas.pop(0) #removes and returns the first element from app_datas
-
-            if app_data and app_data["type"] == "game":
-                print(f"AppID: {app_id} | Name: {app_name}")
-                base_game = True
-            elif app_data and not base_game:
-                base_game = False
-
-        if base_game == False:
-            print(f"Error: No base game retrieved")
-    else:
-        print(f"Error: No game found with a name containing '{search_query}'.")
+    # fetch app information for multiple app IDs concurrently.
+    app_datas = await asyncio.gather(*tasks)
+            
+    # create list only with game type
+    base_game = [app_data for app_data in app_datas if app_data and app_data["type"] == "game"]
+    
+    if not base_game:
+        logging.error(f"No base game retrieved")
+        return None
+    
+    if base_game:
+        print(f"\n{'AppID' : <10}{'Name' : <10}")
+        for game in base_game:
+            print(f"{game['appid'] : <10}{game['name']: <10}")
+        return base_game
 
 # Main function
-async def main():
-    search_query = input(f"\nEnter the app ID or name of the app: ")
-    start_time = time.perf_counter()
+def main():
+    
+    while True:
+        search_query = input(f"\nEnter the app ID or name of the app: ")
+        
+        if not normalizing(search_query):
+            logging.error(f"Only non-alphanumeric characters detected!")
+            continue
 
-    if search_query.isdigit():  # Check if input is only a number
-        return await game_appid(search_query)
-    else:
-        await game_name(search_query)
-
-    end_time = time.perf_counter()
-    elapsed_time = end_time - start_time
-    print(f"\nTime taken: {'{:.4f}'.format(elapsed_time)} seconds")
+        if search_query.isdigit():
+            appid = asyncio.run(game_appid(search_query))
+            if appid and confirmation("Are you sure this is the correct game? (y/n)"):
+                return appid
+        else:
+            asyncio.run(game_name(search_query))
 
 if __name__ == "__main__":
-    # Loop main function if no return
-    while True:
-        result = asyncio.run(main())
-        if result:
-            print (f"\nExiting...")
-            break
+    main()

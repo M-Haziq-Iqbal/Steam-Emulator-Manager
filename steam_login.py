@@ -1,5 +1,7 @@
 import configparser
 import logging
+
+from tool import confirmation
 from test import test
 
 LOGIN_INI = "login_info.ini"
@@ -79,18 +81,6 @@ class Account:
             logging.error(f"Steam account name cannot be found in '{LOGIN_INI}'")
         if not self.password:
             logging.error(f"Steam password cannot be found in '{LOGIN_INI}'")
-        
-def confirmation(message):
-    
-    while True:
-        confirmation = input(message).lower()
-        
-        if confirmation == "y":
-            return True
-        elif confirmation == "n":
-            return False
-        else:
-            print("Please enter only 'y' or 'n'\n")
     
 def main():
     steam = Account()

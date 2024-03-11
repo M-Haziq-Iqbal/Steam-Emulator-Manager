@@ -4,7 +4,7 @@ import subprocess
 
 # Import custom module
 import steam_appid
-import steam_dll
+from steam_file import main as steam_file
 from steam_login import main as steam_login
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -24,7 +24,7 @@ def run_script(login, appid):
 def main():
 
     appid = asyncio.run(steam_appid.main())
-    file = steam_dll.main(appid)
+    file = steam_file()
     login = steam_login()
     
     # Run generate_emu_config.py

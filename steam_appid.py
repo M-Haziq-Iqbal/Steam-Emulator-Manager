@@ -4,8 +4,7 @@ import re
 import time
 import logging
 
-from tool import confirmation,  timer
-from test import test
+from tool import confirmation,  timer, terminal_divider, test
 
 from Levenshtein import distance
 
@@ -102,8 +101,7 @@ async def game_appid(search_query: int):
     if app_data and app_data.get("type") == "game":
         print(f"\n{'AppID' : <10}{'Name' : <10}")
         print(f"{search_query : <10}{app_data['name']: <10}")
-        
-        return app_data
+        return app_data["appid"]
     elif app_data and app_data.get("type") != "game":
         print(f"\n{'AppID' : <10}{'Name' : <10}")
         print(f"{search_query : <10}{app_data['name']: <10}")
@@ -139,22 +137,25 @@ async def game_name(search_query: str):
         print(f"\n{'AppID' : <10}{'Name' : <10}")
         for game in base_game:
             print(f"{game['appid'] : <10}{game['name']: <10}")
+        print()
         return base_game
 
 # Main function
+@terminal_divider
 def main():
     
     while True:
-        search_query = input(f"\nEnter the app ID or name of the app: ")
+        search_query = input(f"Enter the app ID or name of the app: ")
         
         if not normalizing(search_query):
-            logging.error(f"Only non-alphanumeric characters detected!")
+            logging.error(f"Only non-alphanumeric characters detected!\n")
             continue
 
         if search_query.isdigit():
             appid = asyncio.run(game_appid(search_query))
-            if appid and confirmation("Are you sure this is the correct game? (y/n)"):
+            if appid and confirmation("Are you sure this is the correct game? (y/n)\t"):
                 return appid
+            print()
         else:
             asyncio.run(game_name(search_query))
 

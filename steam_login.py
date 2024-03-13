@@ -1,8 +1,7 @@
 import configparser
 import logging
 
-from tool import confirmation
-from test import test
+from tool import confirmation, terminal_divider, test
 
 LOGIN_INI = "login_info.ini"
 
@@ -24,9 +23,8 @@ class Account:
         # Write the configuration to a file
         with open(LOGIN_INI, 'w') as configfile:
             config.write(configfile)
-
-        print()
-        logging.info(f"Steam info has been saved to {LOGIN_INI}")
+            
+        logging.info(f"Steam login info has been saved to {LOGIN_INI}")
         
     def get_login_info(self):
         
@@ -34,6 +32,7 @@ class Account:
             
             while not attribute:
                 attribute = input(f"Enter Steam {details}: ")
+                print()
                 
                 if not attribute:
                     logging.warning(f"Steam {details} is required.\n")
@@ -44,8 +43,8 @@ class Account:
         self.accountName = get_data(self.accountName, "account name")
         self.password = get_data(self.password, "password")
         
-        print(f'\nAccount Name: {self.accountName}')
-        print(f'Password: {self.password}')
+        print(f'Account Name: {self.accountName}')
+        print(f'Password: {self.password}\n')
         
         if not confirmation("Are the details above correct? (y/n)\t"):
             print()
@@ -76,12 +75,12 @@ class Account:
         else:
             print(f"Notice: {LOGIN_INI} doesn't exist")
         
-        print()
         if not self.accountName:
             logging.error(f"Steam account name cannot be found in '{LOGIN_INI}'")
         if not self.password:
             logging.error(f"Steam password cannot be found in '{LOGIN_INI}'")
-    
+
+@terminal_divider
 def main():
     steam = Account()
     steam.read_login_info()

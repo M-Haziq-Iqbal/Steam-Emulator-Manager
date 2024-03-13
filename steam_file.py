@@ -5,19 +5,13 @@ import shutil
 import logging
 import filecmp
 
-from tool import confirmation
-from test import test
+from tool import confirmation, terminal_divider, test
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
 FILE_DIR = os.path.join(ABSOLUTE_DIR, "Goldberg_Lan_Steam_Emu_master--475342f0", "experimental")
-
 class Tool:
-    def terminal_divider():
-        print(f"\n{'-'*150}\n")
-    
     def delete_folder(*folder_path):
-        print()
         for folder in folder_path:
             if os.path.exists(folder):
                 shutil.rmtree(folder)
@@ -162,10 +156,10 @@ class File:
                 
                 for file_path in file.file_folder:
                     print(f"\t'{file_path}'")
+                    
+        print()
         
     def print_backup_folder(*files):
-        
-        Tool.terminal_divider()
         
         # Check if the files has common folders
         if __class__.common_backup_folder:
@@ -192,10 +186,10 @@ class File:
                 
                 for file_path in file.backup_file_folder:
                     print(f"\t'{os.path.join(file_path, '_backup')}'")
+        
+        print()
     
     def restore_backup(*files): 
-        
-        Tool.terminal_divider()
         
         if not __class__.all_backup_folder:
             return None
@@ -203,7 +197,7 @@ class File:
         logging.info("File backup detected!")
         
         if not confirmation("Do you want to restore the backup? (y/n): "):
-            logging.info(f"File backup will not be restored...")
+            logging.info(f"File backup will not be restored...\n")
             return None
         
         # Common folder
@@ -222,13 +216,13 @@ class File:
             }
             
             Tool.replace_file("backup restore", file.file_name, folder_dict)
+        
+        print()
             
     def backup_file(*files):
         
-        Tool.terminal_divider()
-        
         if not confirmation("Do you want create backup? (y/n): "):
-            logging.info(f"File backup will not be created...")
+            logging.info(f"File backup will not be created...\n")
             return None
         
         # Common folder
@@ -255,13 +249,13 @@ class File:
                 os.makedirs(os.path.join(folder, "_backup"), exist_ok=True)
             
             Tool.replace_file("backup create", file.file_name, no_backup)
+        
+        print()
     
     def apply_file(*files):
         
-        Tool.terminal_divider()
-        
         if not confirmation("Do you want apply new files? (y/n): "):
-            logging.info(f"New files will not be applied...")
+            logging.info(f"New files will not be applied...\n")
             return None
         
         # Common folder
@@ -279,11 +273,11 @@ class File:
                 for folder in file.exclusive_folders
             }
             Tool.replace_file("application", file.file_name, file_paths)
+        
+        print()
             
     def open_folder(*files):
 
-        Tool.terminal_divider()
-        
         print(f"\nOpening folder(s) containing file(s)...")
 
         # Common folder
@@ -362,17 +356,21 @@ class Backup(File):
         __class__.print_folder(*__class__.file_instances)
         __class__.restore_backup(*__class__.file_instances)
 
+@terminal_divider
 def main():        
-        logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
-        
-        # Create object instance of class
-        File("steam_api.dll")
-        File("steam_api64.dll")
-            
-        File.main()
-        
-        Tool.terminal_divider()
-        print(f"End of program...")
+    logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
+    
+    # Create object instance of class
+    File("steam_api.dll")
+    File("steam_api64.dll")
+    
+    File.main()
+
+    if File.all_folders:
+        return File.all_folders
+    else:
+        logging.error("No files found!\nExiting...")
+        sys.exit()
         
 if __name__ == "__main__":
     main()

@@ -4,7 +4,7 @@ import re
 import time
 import logging
 
-from tool import confirmation,  timer, terminal_divider, test
+from tool import confirmation, timer, terminal_divider, test
 
 from Levenshtein import distance
 
@@ -142,22 +142,40 @@ async def game_name(search_query: str):
 
 # Main function
 @terminal_divider
-def main():
+def main(folders):
     
-    while True:
-        search_query = input(f"Enter the app ID or name of the app: ")
+    folder_appid = {}
+    
+    for folder in folders:
         
-        if not normalizing(search_query):
-            logging.error(f"Only non-alphanumeric characters detected!\n")
-            continue
+        while True:
+            print(f"'{folder}'")
+            search_query = input(f"Enter the app ID or name of the app for the folder above: ")
+            
+            if not normalizing(search_query):
+                logging.error(f"Only non-alphanumeric characters detected!\n")
+                continue
 
-        if search_query.isdigit():
-            appid = asyncio.run(game_appid(search_query))
-            if appid and confirmation("Are you sure this is the correct game? (y/n)\t"):
-                return appid
-            print()
-        else:
-            asyncio.run(game_name(search_query))
+            if search_query.isdigit():
+                appid = asyncio.run(game_appid(search_query))
+                if appid and confirmation("Are you sure this is the correct game? (y/n)\t"):
+                    folder_appid[folder] = appid
+                    print()
+                    break
+                print()
+            else:
+                asyncio.run(game_name(search_query))
+    
+    
+    length = max([len(list(folder)) for folder in folder_appid]) + 5
+    
+    print(f"{'Folder': ^{length}}\t{'AppID'}")
+    for folder, appid in folder_appid.items():
+        print(f"{folder: <{length}}\t{appid}")
+        
+    print()
+        
+    return folder_appid
 
 if __name__ == "__main__":
     main()

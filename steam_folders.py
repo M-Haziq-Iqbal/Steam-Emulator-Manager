@@ -66,9 +66,6 @@ class File:
         self.file_name: str = file_name
         self.file_instances.append(self)
         
-        self.file_folder: list = []   
-        self.backup_file_folder: list = []
-        
     def find_folder(*files):
         
         for file in files:
@@ -274,9 +271,7 @@ class File:
         }
                 
         Tool.replace_file("application", file_paths)
-        
-        input()
-    
+            
     def main():
         
         instances = __class__.file_instances

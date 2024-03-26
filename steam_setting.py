@@ -2,28 +2,16 @@ import os
 import subprocess
 import logging
 import shutil
+import sys
 
 from tool import confirmation, test, terminal_divider
+from scripts.generate_emu_config import main as generate_emu_config
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
-SCRIPT_DIR = os.path.join(ABSOLUTE_DIR, "files", "scripts", "generate_emu_config.py")
+SCRIPT_DIR = os.path.join(ABSOLUTE_DIR, "scripts", "generate_emu_config.py")
 
-logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
-
-# def confirmation(message):
-
-# Run generate_emu_config.py with additional arguments
-def run_script(login, appids:dict):
-    
-    logging.info(f"Creating 'steam_settings' for chosen folder with respective appID...\n")
-    appid = [str(item) for item in list(appids.values())]
-    
-    # Define the command to run generate_emu_config.py with additional arguments
-    command = ['python', SCRIPT_DIR, login.accountName, login.password, *appid]
-
-    # Run the command using subprocess
-    subprocess.run(command, check=True)
+logging.basicConfig(level=logging.INFO, format='- %(levelname)s - %(message)s')
     
 def move_setting(appids: dict):
     
@@ -51,7 +39,7 @@ def delete_folder(appids: dict):
 @terminal_divider
 def main(appids: dict, login):
     
-    run_script(login, appids)
+    generate_emu_config(appids, login)
     move_setting(appids)
     delete_folder(appids)
 

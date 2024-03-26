@@ -10,6 +10,9 @@ from tool import confirmation, terminal_divider, test
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
 FILE_DIR = os.path.join(ABSOLUTE_DIR, "files", "experimental")
+
+logging.basicConfig(level=logging.INFO, format='- %(levelname)s - %(message)s')
+
 class Tool:
     def delete_folder(*folder_path):
         
@@ -302,8 +305,7 @@ class File:
             
 
 @terminal_divider
-def main():        
-    logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
+def main():
     
     # Create object instance of class
     File("steam_api.dll")

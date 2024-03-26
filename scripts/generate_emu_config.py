@@ -17,12 +17,11 @@ import urllib.request
 import urllib.error
 import threading
 import queue
+import logging
+
+logging.basicConfig(level=logging.INFO, format='- %(levelname)s - %(message)s')
 
 prompt_for_unavailable = True
-
-# if len(sys.argv) < 4:
-#     print("\nUsage: {} appid appid appid etc..\n\nExample: {} 480\n".format(sys.argv[0], sys.argv[0]))
-#     exit(1)
 
 def get_stats_schema(client, game_id, owner_id):
     message = MsgProto(EMsg.ClientGetUserStats)
@@ -142,8 +141,7 @@ def download_published_file(client, published_file_id, backup_directory):
     else:
         print("Could not download file", published_file_id, "no url (you can ignore this if the game doesn't need a controller config)")
         return None
-
-
+    
 def get_inventory_info(client, game_id):
     return client.send_um_and_wait('Inventory.GetItemDefMeta#1', {
             'appid': game_id
@@ -188,6 +186,8 @@ def main(appids: dict, client):
         
     appids = [item for item in appids.values()]
     
+    logging.info(f"\tOutputting config to:")
+    
     for appid in appids:
         backup_dir = os.path.join("backup","{}".format(appid))
         out_dir = os.path.join("{}".format( "{}_output".format(appid)), "steam_settings")
@@ -198,7 +198,7 @@ def main(appids: dict, client):
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
-        print(f"\tOutputting config to '{out_dir}'...")
+        print(f"\t'{out_dir}'")
 
         raw = client.get_product_info(apps=[appid])
         game_info = raw["apps"][appid]
@@ -307,8 +307,8 @@ def main(appids: dict, client):
             f.write(game_info_backup)
         with open(os.path.join(backup_dir, "dlc_product_info.json"), "w") as f:
             f.write(dlc_infos_backup)
-            
-        print()
+       
+    print()
 
 if __name__ == "__main__":
     main()

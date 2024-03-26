@@ -1,11 +1,14 @@
 import configparser
 import logging
+import os
 
+from steam.client import SteamClient
+from steam.enums.common import EResult
 from tool import confirmation, terminal_divider, test
 
 LOGIN_INI = "login_info.ini"
 
-logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='- %(levelname)s - %(message)s')
 
 class Account:
     
@@ -24,7 +27,7 @@ class Account:
         with open(LOGIN_INI, 'w') as configfile:
             config.write(configfile)
             
-        logging.info(f"Steam login info has been saved to {LOGIN_INI}")
+        logging.info(f"Steam login info has been saved to {LOGIN_INI}\n")
         
     def get_login_info(self):
         
@@ -79,6 +82,53 @@ class Account:
             logging.error(f"Steam account name cannot be found in '{LOGIN_INI}'")
         if not self.password:
             logging.error(f"Steam password cannot be found in '{LOGIN_INI}'")
+            
+    def steamClient(self):
+        
+        client = SteamClient()
+        if not os.path.exists("login_temp"):
+            os.makedirs("login_temp")
+        client.set_credential_location("login_temp")
+
+        if (len(self.accountName) == 0 or len(self.password) == 0):
+            client.cli_login()
+        else:
+            result = client.login(self.accountName, password=self.password)
+            auth_code, two_factor_code = None, None
+            while result in (EResult.AccountLogonDenied, EResult.InvalidLoginAuthCode,
+                                EResult.AccountLoginDeniedNeedTwoFactor, EResult.TwoFactorCodeMismatch,
+                                EResult.TryAnotherCM, EResult.ServiceUnavailable,
+                                EResult.InvalidPassword,
+                                ):
+
+                if result == EResult.InvalidPassword:
+                    print("invalid password, the password you set is wrong.")
+                    exit(1)
+
+                elif result in (EResult.AccountLogonDenied, EResult.InvalidLoginAuthCode):
+                    prompt = ("Enter email code: " if result == EResult.AccountLogonDenied else
+                                "Incorrect code. Enter email code: ")
+                    auth_code, two_factor_code = input(prompt), None
+
+                elif result in (EResult.AccountLoginDeniedNeedTwoFactor, EResult.TwoFactorCodeMismatch):
+                    prompt = ("Enter 2FA code: " if result == EResult.AccountLoginDeniedNeedTwoFactor else
+                                "Incorrect code. Enter 2FA code: ")
+                    auth_code, two_factor_code = None, input(prompt)
+
+                elif result in (EResult.TryAnotherCM, EResult.ServiceUnavailable):
+                    if prompt_for_unavailable and result == EResult.ServiceUnavailable:
+                        while True:
+                            answer = input("Steam is down. Keep retrying? [y/n]: ").lower()
+                            if answer in 'yn': break
+
+                        prompt_for_unavailable = False
+                        if answer == 'n': break
+
+                    client.reconnect(maxdelay=15)
+
+                result = client.login(self.accountName, self.password, None, auth_code, two_factor_code)
+                
+        return client
 
 @terminal_divider
 def main():
@@ -86,7 +136,7 @@ def main():
     steam.read_login_info()
     steam.get_login_info()
     
-    return steam
+    return steam.steamClient()
         
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ STEAM_API_URL = "https://api.steampowered.com/ISteamApps/GetAppList/v0002/"
 STEAM_STORE_API_URL = "https://store.steampowered.com/api/appdetails?appids="
 STEAM_REVIEW_API_URL = "https://store.steampowered.com/appreviews/{app_id}?json=1"
 
-logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='- %(levelname)s - %(message)s')
 
 # Return a specific steam game data by appid query
 async def get_app_info_by_id(app_id: int):
@@ -169,7 +169,7 @@ def main(folders):
     
     length = max([len(list(folder)) for folder in folder_appid]) + 5
     
-    print(f"{'Folder': ^{length}}\t{'AppID'}")
+    print(f"{'Folder': <{length}}\t{'AppID'}")
     for folder, appid in folder_appid.items():
         print(f"{folder: <{length}}\t{appid}")
         

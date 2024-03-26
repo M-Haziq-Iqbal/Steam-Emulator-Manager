@@ -1,0 +1,4 @@
+aiohttp==3.9.3
+python_Levenshtein==0.24.0
+python_Levenshtein==0.25.0
+steam==1.4.4

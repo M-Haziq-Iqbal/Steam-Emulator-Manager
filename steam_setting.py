@@ -1,67 +1,68 @@
 import os
 import subprocess
 import logging
+import shutil
 
 from tool import confirmation, test, terminal_divider
 
 ABSOLUTE_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(ABSOLUTE_DIR)
-SCRIPT_DIR = os.path.join(ABSOLUTE_DIR, "Goldberg_Lan_Steam_Emu_master--475342f0", "scripts", "generate_emu_config.py")
+SCRIPT_DIR = os.path.join(ABSOLUTE_DIR, "files", "scripts", "generate_emu_config.py")
 
 logging.basicConfig(level=logging.DEBUG, format='- %(levelname)s - %(message)s')
 
 # def confirmation(message):
 
-def choose_folder(file: list):
-
-    print(f"{'No.' : ^8}{'Name' : <40}")
-    for i, folder in enumerate(file, 1):
-        print(f"{i: ^8}{folder : <40}")
-    print()
-    
-    while len(file) > 1:
-        if confirmation("Select all folders (y/n)\t"):
-            selected_folder = file
-        else:
-            selected_folder = []
-            chosen_folder = input("Select folder by choosing folder numbers separated by commas:\t")       
-            
-            for selected_number in chosen_folder.split(","):
-                try:
-                    number = int(selected_number)
-                except ValueError as e:
-                    logging.error(f"Invalid number: '{selected_number}'. Please enter a valid number.")
-                    continue
-                if number <= 0 or number > len(file):
-                    logging.error(f"Invalid number: '{selected_number}'. Please enter a valid number.")
-                    continue
-                
-                selected_folder.append(file[number - 1])
-        
-        print(f"\n{'No.' : ^8}{'Name' : <40}")
-        for i, folder in enumerate(file, 1):
-            if folder in selected_folder:
-                print(f"{i: ^8}{folder : <40}")
-            
-        if confirmation(f"\nConfirm selected folders? (y/n)\t"):
-            break
-        else:
-            choose_folder(file)
-    
-    input()
-
 # Run generate_emu_config.py with additional arguments
-def run_scipt(login, appid):
+def run_script(login, appids:dict):
+    
+    logging.info(f"Creating 'steam_settings' for chosen folder with respective appID...\n")
+    appid = [str(item) for item in list(appids.values())]
+    
     # Define the command to run generate_emu_config.py with additional arguments
-    command = ['python', SCRIPT_DIR, login.accountName, login.password, appid]
+    command = ['python', SCRIPT_DIR, login.accountName, login.password, *appid]
 
     # Run the command using subprocess
-    subprocess.run(command)
-
-@terminal_divider
-def main(file, appid, login):
-    choose_folder(file)
-    run_scipt(login, appid)
+    subprocess.run(command, check=True)
     
+def move_setting(appids: dict):
+    
+    logging.info(f"Moving 'steam_settings' to chosen folder with respective appID...\n")
+    for folder, appid in appids.items():
+        setting_folder = os.path.join(ABSOLUTE_DIR, (str(appid) + '_output'), 'steam_settings')
+        if os.path.exists(setting_folder):
+            if os.path.exists(os.path.join(folder, 'steam_settings')):
+                shutil.rmtree(os.path.join(folder, 'steam_settings'))
+            shutil.move(setting_folder, folder)
+            print(f"\t'{folder}': successful")
+        else:
+            logging.error(f"'steam_settings' for '{folder}' does not exist")
+    print()
+
+def delete_folder(appids: dict):
+    logging.info(f"Deleting extra folders...\n")
+    for folder, appid in appids.items():
+        setting_folder = os.path.join(ABSOLUTE_DIR, (str(appid) + '_output'))
+        if os.path.exists(setting_folder):
+            shutil.rmtree(setting_folder)
+            print(f"\t'{setting_folder}': successful")
+    print()
+    
+@terminal_divider
+def main(appids: dict, login):
+    
+    run_script(login, appids)
+    move_setting(appids)
+    delete_folder(appids)
+
+class Login:
+    def __init__(self):
+        self.accountName = "MrGoldberg420"
+        self.password = "R6gZR4aXPr^!yL!op@4T"
+        
 if __name__ == "__main__":
+    # login = Login()
+    # appids = {"C:\\Users\\mhazi\\Downloads\\test\\dll": 1290000, 
+    #           "C:\\Users\\mhazi\\Downloads\\test\\dll64": 391540}
+    
     main()

@@ -26,16 +26,17 @@ class Account:
         # Write the configuration to a file
         with open(LOGIN_INI, 'w') as configfile:
             config.write(configfile)
-            
+        
+        print()
+        logging.info(f"Successful login!\n")
         logging.info(f"Steam login info has been saved to {LOGIN_INI}\n")
         
-    def get_login_info(self):
+    def get_login_info(self, invalidPass=None):
         
         def get_data(attribute, details):
             
             while not attribute:
                 attribute = input(f"Enter Steam {details}: ")
-                print()
                 
                 if not attribute:
                     logging.warning(f"Steam {details} is required.\n")
@@ -46,17 +47,22 @@ class Account:
         self.accountName = get_data(self.accountName, "account name")
         self.password = get_data(self.password, "password")
         
-        print(f'Account Name: {self.accountName}')
-        print(f'Password: {self.password}\n')
-        
-        if not confirmation("Are the details above correct? (y/n)\t"):
-            print()
+        if invalidPass:
+            print(f'\nAccount Name: {self.accountName}')
+            
+            self.password = ""
+            self.password = get_data(self.password, "password")
+            
+            print(f'\nAccount Name: {self.accountName}')
+            print(f'Password: {self.password}')
+        else:
+            print(f'\nAccount Name: {self.accountName}')
+            print(f'Password: {self.password}')
+            
+        if not confirmation("\nAre the details above correct? (y/n)\t"):
             self.accountName, self.password = "", ""
             self.get_login_info()
-        else:
-            self.write_login_info()
             
-
     def read_login_info(self):
         # Create a ConfigParser object
         config = configparser.ConfigParser()
@@ -76,11 +82,11 @@ class Account:
                 logging.error(f"{e} in '{LOGIN_INI}'\n")
                 self.get_login_info()
         else:
-            print(f"Notice: {LOGIN_INI} doesn't exist")
+            logging.error(f"{LOGIN_INI} doesn't exist\n")
         
-        if not self.accountName:
+        if login_ini and not self.accountName:
             logging.error(f"Steam account name cannot be found in '{LOGIN_INI}'")
-        if not self.password:
+        if login_ini and not self.password:
             logging.error(f"Steam password cannot be found in '{LOGIN_INI}'")
             
     def steamClient(self):
@@ -102,9 +108,9 @@ class Account:
                                 ):
 
                 if result == EResult.InvalidPassword:
-                    print("invalid password, the password you set is wrong.")
-                    exit(1)
-
+                    logging.error("Invalid password")
+                    self.get_login_info(invalidPass=True)
+                    
                 elif result in (EResult.AccountLogonDenied, EResult.InvalidLoginAuthCode):
                     prompt = ("Enter email code: " if result == EResult.AccountLogonDenied else
                                 "Incorrect code. Enter email code: ")
@@ -135,8 +141,10 @@ def main():
     steam = Account()
     steam.read_login_info()
     steam.get_login_info()
+    steamInfo = steam.steamClient()
+    steam.write_login_info()
     
-    return steam.steamClient()
+    return steamInfo
         
 if __name__ == "__main__":
     main()

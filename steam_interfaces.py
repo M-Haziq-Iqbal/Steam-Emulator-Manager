@@ -18,7 +18,7 @@ def move_file(folder):
         shutil.move(INTERFACE_TXT, os.path.join(folder, "steam_interfaces.txt"))
         
         if os.path.exists(os.path.join(folder, "steam_interfaces.txt")) and not os.path.exists(INTERFACE_TXT):
-            return None
+            return True
             
     logging.error(f"\tMoving 'steam_interfaces.txt' to '{folder}': Unsuccessful")
     os.remove(INTERFACE_TXT)
@@ -26,13 +26,12 @@ def move_file(folder):
 def run_process(folder, dll_file):
     
     for _ in range(5):
-        try:
-            result = subprocess.run([INTERFACE_EXE, os.path.join(folder, dll_file)], check=True)
-            if result.returncode == 0 and os.path.exists(INTERFACE_TXT):
-                move_file(folder)
-                print(f"\t- {folder}: Successful")
-                return None
-        except subprocess.CalledProcessError:
+        result = subprocess.run([INTERFACE_EXE, os.path.join(folder, dll_file)], check=True)
+        
+        if result.returncode == 0 and os.path.exists(INTERFACE_TXT) and move_file(folder):
+            print(f"\t- {folder}: Successful")
+            return
+        else:
             logging.error("Failed. Retrying...")
             
     print(f"\t- {folder}: Unsuccessful")

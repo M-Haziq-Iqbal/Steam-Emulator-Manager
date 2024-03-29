@@ -1,5 +1,4 @@
 import sys
-from tool import test
 
 # Import custom module
 from tool import test
@@ -11,17 +10,12 @@ from steam_interfaces import main as steam_interfaces
 
 def main():
 
-    folders = None
-    appid = None
-    login = None
-    
     folders = steam_folders()
     steam_interfaces(folders)
     
     appids = steam_appid(folders)
     login = steam_login()
     steam_setting(appids, login)
-    
 
 if __name__ == "__main__":
     main()

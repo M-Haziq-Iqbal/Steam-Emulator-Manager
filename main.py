@@ -1,5 +1,3 @@
-import sys
-
 # Import custom module
 from tool import test
 from steam_appid import main as steam_appid

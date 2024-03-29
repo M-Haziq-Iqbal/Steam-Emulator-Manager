@@ -186,7 +186,7 @@ def main(appids: dict, client):
         
     appids = [item for item in appids.values()]
     
-    logging.info(f"\tOutputting config to:")
+    logging.info(f"Outputting config to:")
     
     for appid in appids:
         backup_dir = os.path.join("backup","{}".format(appid))

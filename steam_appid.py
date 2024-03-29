@@ -1,7 +1,6 @@
 import aiohttp
 import asyncio
 import re
-import time
 import logging
 
 from tool import confirmation, timer, terminal_divider, test

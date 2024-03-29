@@ -1,9 +1,6 @@
 import os
-import sys
 import shutil
 import logging
-import filecmp
-import time
 import subprocess
 
 from tool import confirmation, terminal_divider, test
